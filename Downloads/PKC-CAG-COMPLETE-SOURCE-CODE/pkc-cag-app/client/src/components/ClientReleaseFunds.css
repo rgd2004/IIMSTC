@@ -1,0 +1,416 @@
+.client-release-container {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.release-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.release-card h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 24px;
+  color: #333;
+}
+
+.breakdown-box {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.breakdown-box h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.breakdown-row:last-child {
+  border-bottom: none;
+}
+
+.breakdown-row strong {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-section {
+  background: #fffbea;
+  border-left: 4px solid #ffc107;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 25px;
+}
+
+.info-section h4 {
+  margin: 0 0 12px 0;
+  color: #ff9800;
+  font-size: 14px;
+}
+
+.info-section ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.info-section li {
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-group textarea,
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  resize: vertical;
+}
+
+.form-group textarea:focus,
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #999;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  border-left: 3px solid #c62828;
+}
+
+.success-message {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  border-left: 3px solid #2e7d32;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-release,
+.btn-refund {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-release {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  flex: 1;
+}
+
+.btn-release:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-release:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-refund {
+  background: #f5f5f5;
+  color: #d32f2f;
+  border: 2px solid #ffebee;
+}
+
+.btn-refund:hover:not(:disabled) {
+  background: #ffebee;
+  border-color: #d32f2f;
+}
+
+/* Timeline */
+.timeline-info {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.timeline-info h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea 0%, transparent 100%);
+  z-index: 0;
+}
+
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-item span:first-child {
+  width: 32px;
+  height: 32px;
+  background: #f0f0f0;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: #999;
+  transition: all 0.3s ease;
+}
+
+.timeline-item.active span:first-child {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.timeline-item span:last-child {
+  font-size: 12px;
+  text-align: center;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Refund Confirmation Modal */
+.refund-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 20px;
+  color: #ff9800;
+}
+
+.modal-content > p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.modal-content .form-group {
+  margin: 20px 0;
+}
+
+.modal-content textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-cancel,
+.btn-confirm-refund {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn-confirm-refund {
+  background: #ff9800;
+  color: white;
+}
+
+.btn-confirm-refund:hover:not(:disabled) {
+  background: #f57c00;
+  transform: translateY(-2px);
+}
+
+.btn-confirm-refund:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Status Badges */
+.funds-status {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 20px auto;
+}
+
+.funds-status.not-paid {
+  border-left: 4px solid #ffc107;
+  background: #fffbea;
+}
+
+.funds-status.released {
+  border-left: 4px solid #51cf66;
+  background: #e8f5e9;
+}
+
+.status-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.funds-status h3 {
+  margin: 10px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.funds-status p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.sub-text {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .release-card {
+    padding: 20px;
+  }
+
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline {
+    font-size: 12px;
+  }
+
+  .timeline-item span:first-child {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .modal-content {
+    padding: 20px;
+  }
+}

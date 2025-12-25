@@ -1,0 +1,361 @@
+/* client/src/pages/ActivityFeedPage.css */
+.activity-feed-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
+  padding: 40px 20px;
+  margin-top: 60px;
+}
+
+.feed-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.feed-container h1 {
+  color: white;
+  font-size: 2.3em;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  margin-bottom: 30px;
+}
+
+/* TABS */
+.feed-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+  padding: 10px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 20px;
+  background: rgba(99, 102, 241, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.95em;
+}
+
+.tab-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ACTIVITIES LIST */
+.activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.activity-item {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border-left: 5px solid #667eea;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  animation: slideIn 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.activity-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ACTIVITY HEADER */
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.activity-user-info {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+}
+
+.activity-emoji {
+  font-size: 2em;
+  flex-shrink: 0;
+}
+
+.activity-text h3 {
+  color: #333;
+  margin: 0 0 5px 0;
+  font-size: 1.1em;
+}
+
+.activity-text p {
+  color: #666;
+  margin: 0;
+  font-size: 0.95em;
+}
+
+.activity-time {
+  color: #999;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+/* ENGAGEMENT BUTTONS */
+.activity-engagement {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.engagement-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  background: #f0f0f0;
+  color: #333;
+}
+
+.engagement-btn:hover {
+  transform: scale(1.05);
+}
+
+.like-btn:hover {
+  background: #fce4ec;
+  color: #e91e63;
+}
+
+.comment-btn:hover {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+.follow-btn:hover {
+  background: #f3e5f5;
+  color: #9c27b0;
+}
+
+/* COMMENTS PREVIEW */
+.comments-preview {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.comment-item {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.comment-item strong {
+  color: #667eea;
+}
+
+.comment-item p {
+  color: #666;
+  margin: 5px 0 0 0;
+  font-size: 0.9em;
+}
+
+.more-comments {
+  color: #999;
+  font-size: 0.85em;
+  margin: 5px 0 0 0;
+  font-style: italic;
+}
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.pagination-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: white;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+/* LOADING & EMPTY */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: white;
+  font-size: 1.2em;
+}
+
+.empty-state {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.empty-state p {
+  color: white;
+  font-size: 1.1em;
+  margin: 10px 0;
+}
+
+.empty-state p:first-child {
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .activity-feed-page {
+    padding: 20px 10px;
+  }
+
+  .feed-container h1 {
+    font-size: 2em;
+  }
+
+  .feed-tabs {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    padding: 10px;
+  }
+
+  .activity-header {
+    flex-direction: column;
+  }
+
+  .activity-time {
+    align-self: flex-start;
+  }
+
+  .activity-engagement {
+    gap: 8px;
+  }
+
+  .engagement-btn {
+    font-size: 0.85em;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feed-tabs {
+    gap: 5px;
+  }
+
+  .tab-btn {
+    font-size: 0.8em;
+    padding: 8px 12px;
+  }
+
+  .activity-item {
+    padding: 15px;
+  }
+
+  .activity-emoji {
+    font-size: 1.5em;
+  }
+
+  .activity-text h3 {
+    font-size: 1em;
+  }
+
+  .activity-text p {
+    font-size: 0.9em;
+  }
+
+  .engagement-btn {
+    font-size: 0.8em;
+    padding: 6px 10px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination-btn {
+    width: 100%;
+  }
+}

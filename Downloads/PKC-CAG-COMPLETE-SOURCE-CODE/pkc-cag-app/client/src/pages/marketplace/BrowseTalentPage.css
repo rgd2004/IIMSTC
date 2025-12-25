@@ -1,0 +1,867 @@
+/* ==================== MAIN CONTAINER ==================== */
+.browse-talent-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0e27 0%, #0f0f1e 50%, #1a1a2e 100%);
+  color: #e1e8f0;
+}
+
+/* ==================== HERO SECTION ==================== */
+.talent-header {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.talent-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.talent-header h1 {
+  position: relative;
+  font-size: 3.2rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.talent-header p {
+  position: relative;
+  font-size: 1.2rem;
+  color: #a6b4d9;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ==================== MAIN CONTENT LAYOUT ==================== */
+.talent-content {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+/* ==================== FILTERS SECTION ==================== */
+.talent-filters {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 4rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+.talent-filters h3 {
+  display: none;
+}
+
+.talent-filters > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e1e8f0;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.filter-group.checkbox {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter-group.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+  font-weight: 500;
+  text-transform: none;
+  opacity: 1;
+}
+
+.filter-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #667eea;
+  border-radius: 4px;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 1rem;
+  border: 1.5px solid rgba(102, 126, 234, 0.25);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: rgba(15, 15, 30, 0.5);
+  color: #e1e8f0;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.filter-input::placeholder {
+  color: #8b94a8;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: rgba(15, 15, 30, 0.8);
+  box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.reset-filters-btn {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #a6b4d9;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reset-filters-btn:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ==================== RESULTS SECTION ==================== */
+.talent-list-section {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* ==================== LOADING STATE ==================== */
+.loading-state {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(18px);
+}
+
+.loader-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(102, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-right-color: #764ba2;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+  margin: 0 auto 2rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state p {
+  color: #a6b4d9;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(18px);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.6rem;
+  color: #e1e8f0;
+  font-weight: 700;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #8b94a8;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* ==================== TALENT GRID ==================== */
+.talent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+}
+
+/* ==================== TALENT CARD - PREMIUM DESIGN ==================== */
+.talent-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(18px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.talent-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #06b6d4 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+  z-index: 1;
+}
+
+.talent-card:hover::before {
+  transform: scaleX(1);
+}
+
+.talent-card:hover {
+  transform: translateY(-12px);
+  border-color: rgba(102, 126, 234, 0.4);
+  box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%);
+}
+
+/* Card Content Wrapper */
+.talent-card > * {
+  position: relative;
+  z-index: 0;
+}
+
+/* ==================== CARD HEADER SECTION ==================== */
+.talent-header-card {
+  padding: 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.15);
+}
+
+.talent-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.talent-avatar img {
+  width: 85px;
+  height: 85px;
+  border-radius: 14px;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+  transition: all 0.3s;
+}
+
+.talent-card:hover .talent-avatar img {
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.verified-badge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border: 3px solid rgba(15, 15, 30, 0.9);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.talent-info {
+  flex: 1;
+}
+
+.talent-info h3 {
+  margin: 0 0 0.4rem 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #e1e8f0;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.talent-title {
+  margin: 0 0 0.75rem 0;
+  color: #a6b4d9;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+}
+
+.talent-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.talent-rating-stars {
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.talent-rating-count {
+  color: #8b94a8;
+  font-weight: 500;
+}
+
+/* ==================== CARD BIO SECTION ==================== */
+.talent-bio {
+  padding: 1.5rem 2rem;
+  flex-grow: 1;
+}
+
+.talent-bio p {
+  margin: 0;
+  color: #a6b4d9;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==================== SKILLS SECTION ==================== */
+.talent-skills {
+  padding: 0 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.skill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #a6b4d9;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s;
+  cursor: default;
+}
+
+.skill-badge:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.skill-badge.more {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.6rem 0.9rem;
+}
+
+/* ==================== STATS SECTION ==================== */
+.talent-stats {
+  margin: 1.5rem 2rem;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #8b94a8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+/* ==================== PRICING SECTION ==================== */
+.talent-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid rgba(102, 126, 234, 0.15);
+}
+
+.success-rate {
+  display: block;
+  color: #10b981;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.talent-pricing {
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.talent-hourly {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.hourly-price {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #22c55e;
+}
+
+.hourly-label {
+  color: #8b94a8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ==================== ACTIONS SECTION ==================== */
+.talent-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 2rem 2rem 2rem;
+}
+
+.view-profile-btn,
+.contact-btn {
+  flex: 1;
+  padding: 0.9rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.view-profile-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.view-profile-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.view-profile-btn:active {
+  transform: translateY(-1px);
+}
+
+.contact-btn {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  color: #a6b4d9;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.contact-btn:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%);
+  border-color: rgba(102, 126, 234, 0.5);
+  color: #e1e8f0;
+  transform: translateY(-2px);
+}
+
+.contact-btn:active {
+  transform: translateY(0);
+}
+
+/* ==================== PAGINATION ==================== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(18px);
+}
+
+.pagination-btn {
+  padding: 0.85rem 1.8rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination-info {
+  color: #a6b4d9;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 1400px) {
+  .talent-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .talent-header h1 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .talent-content {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .talent-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+  }
+
+  .talent-filters > div {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .talent-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .talent-card {
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .browse-talent-container {
+    padding: 0;
+  }
+
+  .talent-header {
+    padding: 3rem 1.5rem;
+  }
+
+  .talent-header h1 {
+    font-size: 1.9rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .talent-header p {
+    font-size: 1rem;
+  }
+
+  .talent-content {
+    padding: 2rem 1rem;
+  }
+
+  .talent-filters {
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .talent-filters > div {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .talent-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .talent-header-card {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .talent-avatar img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .talent-info h3 {
+    font-size: 1.2rem;
+  }
+
+  .talent-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1rem 1.5rem;
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .talent-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  .view-profile-btn,
+  .contact-btn {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  .pagination {
+    padding: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .pagination-btn {
+    padding: 0.75rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .talent-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .talent-header p {
+    font-size: 0.95rem;
+  }
+
+  .talent-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .talent-grid {
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .talent-card {
+    border-radius: 14px;
+  }
+
+  .talent-header-card {
+    padding: 1.25rem;
+  }
+
+  .talent-avatar img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .talent-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .talent-title {
+    font-size: 0.85rem;
+  }
+
+  .talent-bio p {
+    font-size: 0.9rem;
+  }
+
+  .talent-skills {
+    padding: 0 1.25rem;
+  }
+
+  .skill-badge {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.8rem;
+  }
+
+  .talent-stats {
+    margin: 1rem 1.25rem;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 0.95rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .talent-footer {
+    padding: 1rem 1.25rem;
+  }
+
+  .hourly-price {
+    font-size: 1.6rem;
+  }
+
+  .talent-actions {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+
+  .pagination {
+    padding: 1.25rem 1rem;
+  }
+
+  .pagination-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .pagination-info {
+    font-size: 0.85rem;
+  }
+}

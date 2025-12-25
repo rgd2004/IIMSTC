@@ -1,0 +1,189 @@
+/* ===========================================
+   ULTRA-MODERN ORDER DETAILS PAGE
+   Glass + Neon Theme
+   Fully matches Checkout UI
+=========================================== */
+
+.order-details-page {
+  padding: 120px 20px;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #0f172a, #020617 75%);
+  color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  font-family: "Inter", system-ui;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* -------------------------------------------
+   HEADER
+------------------------------------------- */
+
+.order-header {
+  margin-bottom: 25px;
+}
+
+.order-header h1 {
+  font-size: 2.6rem;
+  font-weight: 900;
+  margin: 0;
+  background: linear-gradient(135deg, #fff, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.order-header p {
+  margin-top: 5px;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* BACK BUTTON */
+.back-btn {
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  border-radius: 12px;
+  color: #c7d2fe;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s;
+}
+
+.back-btn:hover {
+  background: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+/* -------------------------------------------
+   GLASS CARDS
+------------------------------------------- */
+.glass-card {
+  margin-top: 25px;
+  padding: 25px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+/* -------------------------------------------
+   STATUS BADGE
+------------------------------------------- */
+.status-badge {
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.status-pending {
+  background: rgba(234,179,8,0.2);
+  color: #facc15;
+}
+
+.status-processing {
+  background: rgba(59,130,246,0.2);
+  color: #60a5fa;
+}
+
+.status-completed {
+  background: rgba(34,197,94,0.2);
+  color: #4ade80;
+}
+
+/* -------------------------------------------
+   TIMELINE
+------------------------------------------- */
+.status-timeline {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.step {
+  text-align: center;
+  opacity: 0.35;
+  transition: 0.3s;
+}
+
+.step span {
+  display: block;
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.step.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* -------------------------------------------
+   SUMMARY ROWS
+------------------------------------------- */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 15px;
+}
+
+.summary-row span {
+  color: #cbd5e1;
+}
+
+.summary-row strong {
+  color: #fff;
+}
+
+/* -------------------------------------------
+   PHOTOS GRID (GMB Setup)
+------------------------------------------- */
+.photos-grid {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.photos-grid img {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* -------------------------------------------
+   LOADING STATE
+------------------------------------------- */
+.order-loading {
+  text-align: center;
+  padding-top: 150px;
+  font-size: 1.4rem;
+  opacity: 0.7;
+  color: #e2e8f0;
+}
+
+/* -------------------------------------------
+   RESPONSIVE
+------------------------------------------- */
+@media (max-width: 600px) {
+  .order-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .status-timeline {
+    gap: 20px;
+  }
+}

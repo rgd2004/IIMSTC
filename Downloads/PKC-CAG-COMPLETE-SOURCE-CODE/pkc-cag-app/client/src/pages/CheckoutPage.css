@@ -1,0 +1,373 @@
+/* ===================================================
+   🌌 Ultra-Modern Checkout UI (Glass + Neon)
+   Designed for PKC CAG — Premium Quality
+=================================================== */
+
+:root {
+  --bg: #0f0f1e;
+  --bg-soft: #1a1a2e;
+  --bg-glow: rgba(224, 224, 230, 0.18);
+
+  --glass: rgba(99, 102, 241, 0.08);
+  --glass-border: rgba(99, 102, 241, 0.2);
+  --glass-hover: rgba(99, 102, 241, 0.12);
+
+  --text: #6c87a1d6;
+  --muted: rgba(255, 255, 255, 0.75);
+
+  --accent1: #6366f1;
+  --accent2: #06b6d4;
+  --accent3: #22c55e;
+
+  --radius: 16px;
+  --shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  --font: "Inter", system-ui;
+}
+
+/* ---------------- PAGE ---------------- */
+
+.checkout-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
+  padding: 120px 20px 80px;
+  font-family: var(--font);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------------- CONTAINER ---------------- */
+
+.checkout-page .container {
+  width: 100%;
+  max-width: 1250px;
+}
+
+/* ---------------- GRID ---------------- */
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 40px;
+}
+
+@media(max-width: 900px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- GLASS CARD ---------------- */
+
+.glass-card,
+.order-summary,
+.checkout-form {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: var(--shadow);
+  padding: 30px;
+  transition: 0.25s ease;
+}
+
+.glass-card:hover,
+.order-summary:hover,
+.checkout-form:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.12) 100%);
+  transform: translateY(-6px);
+  box-shadow: 0 30px 70px rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* ---------------- SUMMARY ---------------- */
+
+.order-summary h2 {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.summary-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+/* Service Icon + Title */
+.service-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.service-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  box-shadow: 0 10px 25px rgba(6, 182, 212, 0.35);
+}
+
+/* Pricing */
+.price-breakdown {
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin: 6px 0;
+  color: var(--muted);
+}
+
+.price-row.total {
+  margin-top: 10px;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+/* Delivery Row */
+.delivery {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ---------------- FORM ---------------- */
+
+.checkout-form h2 {
+  font-size: 26px;
+  margin-bottom: 22px;
+  font-weight: 900;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #22c55e;
+  margin-bottom: 4px;
+}
+
+/* INPUTS */
+.form-group input,
+.form-group textarea {
+  padding: 16px;
+  font-size: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--accent2);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 0 4px rgba(6,182,212,0.18);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* ---------------- BUTTON ---------------- */
+
+.btn-proceed-payment {
+  width: 100%;
+  padding: 18px;
+  margin-top: 10px;
+
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #21878a;
+
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+
+  letter-spacing: 0.8px;
+
+  transition: 0.25s ease;
+  box-shadow: 0 14px 35px rgba(99,102,241,0.35);
+}
+
+.btn-proceed-payment:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 45px rgba(99,102,241,0.45);
+}
+
+.btn-proceed-payment:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cancel Button (Optional) */
+.btn-cancel {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.btn-cancel:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-4px);
+}
+
+/* ==================== 🎟️ COUPON SECTION ==================== */
+
+.coupon-section {
+  margin: 18px 0;
+  padding: 14px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 12px;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.coupon-input-group input {
+  flex: 1;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.coupon-input-group input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent3);
+}
+
+.btn-apply-coupon {
+  padding: 10px 14px;
+  background: var(--accent3);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.btn-apply-coupon:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.btn-apply-coupon:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.coupon-applied {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.coupon-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--accent3);
+  color: #000;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.btn-remove-coupon {
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-remove-coupon:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.price-row.discount {
+  color: var(--accent3);
+  font-weight: 700;
+}
+
+.price-row.final-total {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--accent3);
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 12px;
+}
+
+/* ==================== ERROR ==================== */
+
+.err {
+  font-size: 13px;
+  color: #ff6b6b;
+  margin-top: -6px;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media(max-width: 600px) {
+  .checkout-page {
+    padding-top: 80px;
+  }
+
+  .service-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+
+  .price-row.total {
+    font-size: 22px;
+  }
+}
