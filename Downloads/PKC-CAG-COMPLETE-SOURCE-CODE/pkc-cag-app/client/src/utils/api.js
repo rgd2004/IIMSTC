@@ -4,9 +4,9 @@ import axios from "axios";
 // ================================
 // AXIOS INSTANCE
 // ================================
-// Force API URL to http://localhost:5000/api regardless of env
-const baseURL = "http://localhost:5000/api";
-console.log('🔗 API Base URL (HARDCODED):', baseURL);
+// Use environment variable for API URL
+const baseURL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+console.log('🔗 API Base URL:', baseURL);
 const API = axios.create({
   baseURL: baseURL,
   withCredentials: false, // using JWT, not cookies
