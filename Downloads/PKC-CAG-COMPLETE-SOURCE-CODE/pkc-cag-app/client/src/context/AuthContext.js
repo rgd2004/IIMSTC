@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   axios.defaults.baseURL =
-    process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+    process.env.REACT_APP_API_URL || "https://api.pkccag.com/api";
 
   // Fetch logged-in user
   const fetchMe = useCallback(async () => {
@@ -23,11 +23,11 @@ export const AuthProvider = ({ children }) => {
 
     try {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      const res = await axios.get("/api/auth/me");
-      console.log('✅ User fetched from /api/auth/me:', res.data.user);
+      const res = await axios.get("/auth/me");
+      console.log('✅ User fetched from /auth/me:', res.data.user);
       setUser(res.data.user);
     } catch (err) {
-      console.error('⚠️ Failed to fetch user from /api/auth/me. Trying localStorage...', err.message);
+      console.error('⚠️ Failed to fetch user from /auth/me. Trying localStorage...', err.message);
       // Try to restore from localStorage as fallback
       if (savedUser) {
         try {

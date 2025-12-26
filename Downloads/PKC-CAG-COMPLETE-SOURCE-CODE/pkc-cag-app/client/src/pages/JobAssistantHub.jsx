@@ -19,7 +19,7 @@ const JobAssistantHub = () => {
       if (token) {
         try {
           const myAppsRes = await axios.get(
-            `${process.env.REACT_APP_API_URL}/api/job-assistant/my-applications`,
+            `${process.env.REACT_APP_API_URL}/job-assistant/my-applications`,
             {
               headers: { Authorization: `Bearer ${token}` }
             }

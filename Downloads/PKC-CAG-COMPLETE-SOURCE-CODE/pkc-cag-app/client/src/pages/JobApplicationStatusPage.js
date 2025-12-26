@@ -15,7 +15,7 @@ const JobApplicationStatusPage = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/job-assistant/status/${applicationId}`
+          `${process.env.REACT_APP_API_URL}/job-assistant/status/${applicationId}`
         );
         const result = await response.json();
 

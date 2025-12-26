@@ -3,6 +3,19 @@ const nodemailer = require("nodemailer");
 // ======================================================
 // 🚀 CREATE TRANSPORTER (GMAIL APP PASSWORD REQUIRED)
 // ======================================================
+
+// Check if environment variables are set
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  console.error("❌ ERROR: Missing email configuration!");
+  console.error("   EMAIL_USER:", process.env.EMAIL_USER ? "✅ Set" : "❌ NOT SET");
+  console.error("   EMAIL_PASS:", process.env.EMAIL_PASS ? "✅ Set" : "❌ NOT SET");
+  console.error("\n📝 Please add these environment variables to Render:");
+  console.error("   1. Go to Dashboard > Select your service");
+  console.error("   2. Environment tab > Add Private Environment Variables");
+  console.error("   3. Add: EMAIL_USER=pkccag@gmail.com");
+  console.error("   4. Add: EMAIL_PASS=<Gmail App Password from Gmail Security settings>");
+}
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -12,6 +25,16 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
+});
+
+// Verify transporter connection
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Email transporter error:", error.message);
+    console.error("⚠️  Email notifications will NOT work");
+  } else {
+    console.log("✅ Email transporter verified and ready");
+  }
 });
 
 // ======================================================
@@ -93,11 +116,18 @@ exports.sendOTPEmail = async (email, otp, name) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    return { success: true };
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("❌ Cannot send OTP email - EMAIL_USER or EMAIL_PASS not configured");
+      throw new Error("Email credentials not configured on server");
+    }
+    
+    console.log(`📧 Sending OTP email to: ${email}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ OTP email sent successfully to ${email}`);
+    return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("OTP Email failed:", error);
-    return { success: false, error: error.message };
+    console.error(`❌ OTP Email failed for ${email}:`, error.message);
+    throw error;
   }
 };
 
@@ -2435,6 +2465,13 @@ transporter.verify((err, success) => {
 exports.sendEmail = async (emailData) => {
   const { email, subject, html, attachments } = emailData;
 
+  // Validate email configuration
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    const errorMsg = "Email credentials not configured on server (EMAIL_USER or EMAIL_PASS missing)";
+    console.error("❌", errorMsg);
+    throw new Error(errorMsg);
+  }
+
   const mailOptions = {
     from: `PKC CAG <${process.env.EMAIL_USER}>`,
     to: email,
@@ -2444,11 +2481,12 @@ exports.sendEmail = async (emailData) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent to:', email);
-    return { success: true };
+    console.log(`📧 Sending email to: ${email} | Subject: ${subject}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent to: ${email} | MessageID: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('❌ Email sending failed:', error);
-    return { success: false, error: error.message };
+    console.error(`❌ Email sending failed for ${email}:`, error.message);
+    throw error;
   }
 };

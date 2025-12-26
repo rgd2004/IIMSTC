@@ -99,7 +99,7 @@ const JobAssistantPage = () => {
       data.append('bio', formData.bio);
       data.append('resume', resume);
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/job-assistant/submit`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/job-assistant/submit`, {
         method: 'POST',
         body: data,
       });

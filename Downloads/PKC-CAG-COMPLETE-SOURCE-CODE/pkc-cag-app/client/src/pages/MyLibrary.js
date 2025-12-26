@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/api';
 import '../styles/EBookHub.css';
 
 const MyLibrary = () => {
@@ -25,7 +25,7 @@ const MyLibrary = () => {
         return;
       }
 
-      const myEbooksRes = await axios.get('/api/ebooks/my-ebooks', {
+      const myEbooksRes = await API.get('/ebooks/my-ebooks', {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('📖 My e-books fetched:', myEbooksRes.data);
@@ -40,8 +40,8 @@ const MyLibrary = () => {
 
   const handleDownload = async (purchaseId) => {
     try {
-      const response = await axios.get(
-        `/api/ebooks/purchase/${purchaseId}/download`,
+      const response = await API.get(
+        `/ebooks/purchase/${purchaseId}/download`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         }

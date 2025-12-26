@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import API from '../../utils/api';
 import './AdminJobAssistant.css';
 
 const AdminJobAssistant = () => {
@@ -26,25 +27,18 @@ const AdminJobAssistant = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/admin/all`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      const response = await API.get('/job-assistant/admin/all', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.data.success) {
         const filtered =
           filterStatus === 'all'
-            ? result.applications
-            : result.applications.filter((app) => app.status === filterStatus);
+            ? response.data.applications
+            : response.data.applications.filter((app) => app.status === filterStatus);
         setApplications(filtered);
       } else {
-        toast.error(result.message || 'Error fetching applications');
+        toast.error(response.data.message || 'Error fetching applications');
       }
     } catch (error) {
       console.error('Fetch error:', error);
@@ -56,19 +50,12 @@ const AdminJobAssistant = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/admin/stats`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      const response = await API.get('/job-assistant/admin/stats', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
 
-      const result = await response.json();
-
-      if (result.success) {
-        setStats(result.stats);
+      if (response.data.success) {
+        setStats(response.data.stats);
       }
     } catch (error) {
       console.error('Stats error:', error);
@@ -77,27 +64,20 @@ const AdminJobAssistant = () => {
 
   const handleStatusChange = async (id, newStatus, newNotes = '') => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/admin/${id}/status`,
+      const response = await API.patch(`/job-assistant/admin/${id}/status`, 
+        { status: newStatus, notes: newNotes },
         {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({ status: newStatus, notes: newNotes }),
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         }
       );
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.data.success) {
         toast.success('Status updated successfully');
         fetchApplications();
         fetchStats();
         setShowModal(false);
       } else {
-        toast.error(result.message || 'Error updating status');
+        toast.error(response.data.message || 'Error updating status');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -107,24 +87,19 @@ const AdminJobAssistant = () => {
 
   const handleMarkContacted = async (id) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/admin/${id}/contacted`,
+      const response = await API.patch(`/job-assistant/admin/${id}/contacted`,
+        {},
         {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         }
       );
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.data.success) {
         toast.success('Marked as contacted');
         fetchApplications();
         fetchStats();
       } else {
-        toast.error(result.message || 'Error updating');
+        toast.error(response.data.message || 'Error updating');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -138,24 +113,16 @@ const AdminJobAssistant = () => {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/admin/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      const response = await API.delete(`/job-assistant/admin/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.data.success) {
         toast.success('Application deleted');
         fetchApplications();
         fetchStats();
       } else {
-        toast.error(result.message || 'Error deleting');
+        toast.error(response.data.message || 'Error deleting');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -166,21 +133,15 @@ const AdminJobAssistant = () => {
   const handleDownloadResume = async (applicationId, resumeFileName) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/admin/${applicationId}/download-resume`,
+      const response = await API.get(`/job-assistant/admin/${applicationId}/download-resume`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          responseType: 'blob',
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
-      if (!response.ok) {
-        throw new Error('Download failed');
-      }
-
       // Create a blob from the response
-      const blob = await response.blob();
+      const blob = response.data;
       
       // Create a temporary URL for the blob
       const url = window.URL.createObjectURL(blob);
@@ -527,3 +488,4 @@ const AdminJobAssistant = () => {
 };
 
 export default AdminJobAssistant;
+

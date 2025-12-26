@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../../utils/api';
 import '../../styles/AdminEBooks.css';
 
 const AdminEBooks = () => {
@@ -38,7 +38,7 @@ const AdminEBooks = () => {
   const fetchEbooks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/ebooks/admin/all', {
+      const response = await API.get('/ebooks/admin/all', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setEbooks(response.data.ebooks || []);
@@ -80,7 +80,7 @@ const AdminEBooks = () => {
 
     try {
       setLoading(true);
-      const endpoint = editingId ? `/api/ebooks/admin/${editingId}` : '/api/ebooks/admin/create';
+      const endpoint = editingId ? `/ebooks/admin/${editingId}` : '/ebooks/admin/create';
       const method = editingId ? 'PUT' : 'POST';
 
       const submitData = new FormData();
@@ -109,15 +109,17 @@ const AdminEBooks = () => {
         submitData.append('pdfFile', formData.pdfFile);
       }
 
-      const response = await axios({
-        method,
-        url: endpoint,
-        data: submitData,
-        headers: { 
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      // Use the configured API instance with proper method
+      let response;
+      if (editingId) {
+        response = await API.put(`/ebooks/admin/${editingId}`, submitData, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+      } else {
+        response = await API.post('/ebooks/admin/create', submitData, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+      }
 
       setMessage({ 
         type: 'success', 
@@ -160,7 +162,7 @@ const AdminEBooks = () => {
 
     try {
       setLoading(true);
-      await axios.delete(`/api/ebooks/admin/${id}`, {
+      await API.delete(`/ebooks/admin/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
@@ -606,3 +608,4 @@ const AdminEBooks = () => {
 };
 
 export default AdminEBooks;
+

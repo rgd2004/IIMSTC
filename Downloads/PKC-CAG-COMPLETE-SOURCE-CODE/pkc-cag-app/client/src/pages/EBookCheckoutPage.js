@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/api';
 import './EBookCheckoutPage.css';
 
 const EBookCheckoutPage = () => {
@@ -55,7 +55,7 @@ const EBookCheckoutPage = () => {
       setLoading(true);
       setError('');
 
-      const response = await axios.post('/api/ebooks/purchase/create', {
+      const response = await API.post('/ebooks/purchase/create', {
         ebookId: ebook._id,
         email: userDetails.email,
         name: userDetails.name,
@@ -111,7 +111,7 @@ const EBookCheckoutPage = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post('/api/ebooks/purchase/verify', {
+      const response = await API.post('/ebooks/purchase/verify', {
         razorpayOrderId: paymentResponse.razorpay_order_id,
         razorpayPaymentId: paymentResponse.razorpay_payment_id,
         razorpaySignature: paymentResponse.razorpay_signature,

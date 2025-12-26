@@ -47,7 +47,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    const googleUrl = `${process.env.REACT_APP_API_URL}/api/auth/google`;
+    const googleUrl = `${process.env.REACT_APP_API_URL}/auth/google`;
     console.log("🔐 Google Login Initiating");
     console.log("   URL:", googleUrl);
     console.log("   API Base:", process.env.REACT_APP_API_URL);

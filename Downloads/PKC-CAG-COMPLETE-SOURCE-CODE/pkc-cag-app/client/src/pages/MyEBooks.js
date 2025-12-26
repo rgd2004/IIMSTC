@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/api';
 import './MyEBooks.css';
 
 const MyEBooks = () => {
@@ -17,7 +17,7 @@ const MyEBooks = () => {
   const fetchMyEBooks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/ebooks/my-ebooks', {
+      const response = await API.get('/ebooks/my-ebooks', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setEbooks(response.data.ebooks || []);
@@ -30,8 +30,8 @@ const MyEBooks = () => {
 
   const handleDownload = async (purchaseId) => {
     try {
-      const response = await axios.get(
-        `/api/ebooks/purchase/${purchaseId}/download`,
+      const response = await API.get(
+        `/ebooks/purchase/${purchaseId}/download`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         }

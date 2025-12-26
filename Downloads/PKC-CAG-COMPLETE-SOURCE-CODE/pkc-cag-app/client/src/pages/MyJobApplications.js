@@ -22,7 +22,7 @@ const MyJobApplications = () => {
 
       // Fetch all applications and filter by user email
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/job-assistant/my-applications`,
+        `${process.env.REACT_APP_API_URL}/job-assistant/my-applications`,
         {
           headers: {
             'Content-Type': 'application/json',

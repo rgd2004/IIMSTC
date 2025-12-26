@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/api';
 import './BrowseEBooks.css';
 
 const BrowseEBooks = () => {
@@ -35,7 +35,7 @@ fetchEbooks();
 const fetchEbooks = async () => {
 try {
 setLoading(true);
-const ebooksRes = await axios.get('/api/ebooks');
+const ebooksRes = await API.get('/ebooks');
 console.log('📚 All e-books fetched:', ebooksRes.data);
 setAllEbooks(ebooksRes.data.ebooks || []);
 } catch (error) {

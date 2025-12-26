@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/api';
 import '../pages/EBooksPage.css';
 
 const EBooksPage = () => {
@@ -17,7 +17,7 @@ const EBooksPage = () => {
   const fetchEbooks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/ebooks', {
+      const response = await API.get('/ebooks', {
         params: {
           search: searchTerm,
           category: selectedCategory,

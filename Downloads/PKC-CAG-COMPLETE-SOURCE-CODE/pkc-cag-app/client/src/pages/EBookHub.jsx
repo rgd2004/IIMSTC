@@ -14,14 +14,14 @@ const EBookHub = () => {
 
   const fetchStats = async () => {
     try {
-      const ebooksRes = await axios.get('/api/ebooks');
+      const ebooksRes = await axios.get('/ebooks');
       const browseCount = ebooksRes.data.ebooks?.length || 0;
 
       let libraryCount = 0;
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          const myEbooksRes = await axios.get('/api/ebooks/my-ebooks', {
+          const myEbooksRes = await axios.get('/ebooks/my-ebooks', {
             headers: { Authorization: `Bearer ${token}` }
           });
           libraryCount = myEbooksRes.data.ebooks?.length || 0;

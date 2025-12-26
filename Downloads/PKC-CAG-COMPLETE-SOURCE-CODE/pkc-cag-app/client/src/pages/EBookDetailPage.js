@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/api';
 import './EBookDetailPage.css';
 
 const EBookDetailPage = () => {
@@ -19,7 +19,7 @@ const EBookDetailPage = () => {
   const fetchEbookDetail = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/ebooks/${id}`);
+      const response = await API.get(`/ebooks/${id}`);
       const ebookData = response.data.ebook;
       if (!ebookData.language) {
         ebookData.language = 'English';
@@ -29,7 +29,7 @@ const EBookDetailPage = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const myEbooksRes = await axios.get('/api/ebooks/my-ebooks', {
+          const myEbooksRes = await API.get('/ebooks/my-ebooks', {
             headers: { Authorization: `Bearer ${token}` }
           });
           const purchased = myEbooksRes.data.ebooks.some(e => e._id === id);
