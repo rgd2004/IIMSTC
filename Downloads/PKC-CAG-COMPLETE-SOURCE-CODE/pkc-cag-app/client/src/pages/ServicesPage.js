@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { servicesAPI } from '../utils/api';
@@ -11,7 +11,8 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
+  const [sortBy, setSortBy] = useState('trending');
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -21,12 +22,9 @@ const ServicesPage = () => {
 
   const fetchServices = async (opts = {}) => {
     try {
-      // Don't filter by isActive on initial load - get all services
       const params = { ...opts };
       const res = await servicesAPI.getAllServices(params);
-      console.log('Services response:', res.data);
       const servicesList = res.data.services || [];
-      // Filter to only active services on client side
       const activeServices = servicesList.filter(s => s.isActive !== false);
       setServices(activeServices);
     } catch (err) {
@@ -38,47 +36,80 @@ const ServicesPage = () => {
     }
   };
 
-  const handleSearch = async () => {
-    setLoading(true);
-    const svcIdMatch = /^[0-9]{4}$/.test(search.trim());
-    if (svcIdMatch) {
-      try {
-        const res = await servicesAPI.getAllServices({ q: search.trim() });
-        const list = res.data.services || [];
-        if (list.length === 1 && list[0].serviceId === search.trim()) {
-          window.location.href = `/services/${list[0]._id}`;
-          return;
-        }
-      } catch (err) {
-        console.error('Service search error:', err);
+  const handleSearch = useCallback(async (searchTerm = search) => {
+    // Debounced search (500ms)
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    const timeout = setTimeout(async () => {
+      if (!searchTerm.trim()) {
+        fetchServices({});
+        return;
       }
-    }
-    fetchServices({ q: search.trim() });
-  };
+      
+      setLoading(true);
+      const svcIdMatch = /^[0-9]{4}$/.test(searchTerm.trim());
+      if (svcIdMatch) {
+        try {
+          const res = await servicesAPI.getAllServices({ q: searchTerm.trim() });
+          const list = res.data.services || [];
+          if (list.length === 1 && list[0].serviceId === searchTerm.trim()) {
+            window.location.href = `/services/${list[0]._id}`;
+            return;
+          }
+        } catch (err) {
+          console.error('Service search error:', err);
+        }
+      }
+      fetchServices({ q: searchTerm.trim() });
+    }, 500);
+    
+    setSearchTimeout(timeout);
+  }, [search, searchTimeout]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
+    if (searchTimeout) clearTimeout(searchTimeout);
     setSearch('');
     setFilter('all');
+    setSortBy('trending');
     setLoading(true);
     fetchServices({});
-  };
+  }, [searchTimeout]);
 
-  // Category configuration with icons
-  const categories = [
-    { key: 'all', label: 'All Services', icon: 'fas fa-th' },
-    { key: 'instagram', label: 'Instagram', icon: 'fab fa-instagram' },
-    { key: 'facebook', label: 'Facebook', icon: 'fab fa-facebook' },
-    { key: 'youtube', label: 'YouTube', icon: 'fab fa-youtube' },
-    { key: 'twitter', label: 'Twitter', icon: 'fab fa-twitter' },
-    { key: 'telegram', label: 'Telegram', icon: 'fab fa-telegram' },
-    { key: 'reviews', label: 'Reviews', icon: 'fas fa-star' },
-    { key: 'gmb', label: 'GMB', icon: 'fas fa-map-marker-alt' },
-    { key: 'website', label: 'Website', icon: 'fas fa-globe' },
-    { key: 'seo', label: 'SEO', icon: 'fas fa-search' }
-  ];
+  const sortServices = useCallback((servicesToSort) => {
+    const sorted = [...servicesToSort];
+    switch (sortBy) {
+      case 'price-low':
+        return sorted.sort((a, b) => (a.pricePerUnit || a.pricePer1000) - (b.pricePerUnit || b.pricePer1000));
+      case 'price-high':
+        return sorted.sort((a, b) => (b.pricePerUnit || b.pricePer1000) - (a.pricePerUnit || a.pricePer1000));
+      case 'popular':
+        return sorted.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
+      default:
+        return sorted;
+    }
+  }, [sortBy]);
+
+  const categories = useMemo(() => [
+    { key: 'all', label: 'All Services', icon: 'fas fa-th', color: '#6366f1' },
+    { key: 'instagram', label: 'Instagram', icon: 'fab fa-instagram', color: '#E4405F' },
+    { key: 'facebook', label: 'Facebook', icon: 'fab fa-facebook', color: '#1877F2' },
+    { key: 'youtube', label: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+    { key: 'twitter', label: 'Twitter', icon: 'fab fa-twitter', color: '#1DA1F2' },
+    { key: 'telegram', label: 'Telegram', icon: 'fab fa-telegram', color: '#0088cc' },
+    { key: 'reviews', label: 'Reviews', icon: 'fas fa-star', color: '#F59E0B' },
+    { key: 'gmb', label: 'GMB', icon: 'fas fa-map-marker-alt', color: '#34A853' },
+    { key: 'website', label: 'Website', icon: 'fas fa-globe', color: '#5B4AFF' },
+    { key: 'seo', label: 'SEO', icon: 'fas fa-search', color: '#FF6B6B' }
+  ], []);
+
+  const filtered = useMemo(() => 
+    filter === 'all' ? services : services.filter((s) => s.category === filter),
+    [filter, services]
+  );
+  
+  const sorted = useMemo(() => sortServices(filtered), [sortServices, filtered]);
 
   if (!user) {
-    console.warn('ServicesPage: user not logged in — redirecting to /login');
     return <Navigate to="/login" replace />;
   }
 
@@ -91,26 +122,6 @@ const ServicesPage = () => {
     );
   }
 
-  if (!loading && services.length === 0 && !search) {
-    return (
-      <div className="services-page error-state">
-        <div className="container">
-          <div className="error-card">
-            <i className="fas fa-exclamation-circle"></i>
-            <h1>No Services Available</h1>
-            <p>There are currently no services available on the platform.</p>
-            <p className="user-info">Logged in as: <strong>{user?.email}</strong></p>
-            <button onClick={() => { setLoading(true); fetchServices(); }} className="btn-primary">
-              <i className="fas fa-redo"></i> Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const filtered = filter === 'all' ? services : services.filter((s) => s.category === filter);
-
   return (
     <div className="services-page">
       {/* Hero Section */}
@@ -121,20 +132,20 @@ const ServicesPage = () => {
               <span className="gradient-text">Premium Services</span>
             </h1>
             <p className="hero-subtitle">
-              Boost your social media presence with our high-quality premium packages
+              Boost your online presence with our high-quality, verified services
             </p>
             <div className="hero-stats">
               <div className="stat-item">
-                <i className="fas fa-check-circle"></i>
+                <i className="fas fa-lightning-bolt"></i>
                 <span>Instant Delivery</span>
               </div>
               <div className="stat-item">
                 <i className="fas fa-shield-alt"></i>
-                <span>100% Safe</span>
+                <span>100% Secure</span>
               </div>
               <div className="stat-item">
-                <i className="fas fa-users"></i>
-                <span>Real Engagement</span>
+                <i className="fas fa-star"></i>
+                <span>Quality Guaranteed</span>
               </div>
             </div>
           </div>
@@ -149,9 +160,12 @@ const ServicesPage = () => {
               <i className="fas fa-search search-icon"></i>
               <input
                 type="text"
-                placeholder="Search by service name or 4-digit ID..."
+                placeholder="Search services..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  handleSearch(e.target.value);
+                }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 className="search-input"
               />
@@ -162,27 +176,19 @@ const ServicesPage = () => {
               )}
             </div>
             <button className="btn-search" onClick={handleSearch}>
-              <i className="fas fa-search"></i> Search
-            </button>
-            <button className="btn-reset" onClick={handleReset}>
-              <i className="fas fa-redo"></i> Reset
+              <i className="fas fa-search"></i>
             </button>
           </div>
 
-          <div className="view-mode-toggle">
-            <button
-              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-            >
-              <i className="fas fa-th"></i>
-            </button>
-            <button
-              className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-              title="List View"
-            >
-              <i className="fas fa-list"></i>
+          <div className="filter-group">
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
+              <option value="trending">Trending</option>
+              <option value="popular">Most Popular</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
+            <button className="btn-reset" onClick={handleReset} title="Reset filters">
+              <i className="fas fa-redo"></i>
             </button>
           </div>
         </div>
@@ -195,96 +201,109 @@ const ServicesPage = () => {
                 key={cat.key}
                 onClick={() => setFilter(cat.key)}
                 className={`filter-chip ${filter === cat.key ? 'active' : ''}`}
+                style={filter === cat.key ? { borderColor: cat.color, backgroundColor: cat.color + '15' } : {}}
               >
-                <i className={cat.icon}></i>
+                <i className={cat.icon} style={filter === cat.key ? { color: cat.color } : {}}></i>
                 <span>{cat.label}</span>
-                {filter === cat.key && (
-                  <span className="chip-count">
-                    {filter === 'all' ? services.length : filtered.length}
-                  </span>
-                )}
               </button>
             ))}
           </div>
         </div>
 
         {/* Results Header */}
-        <div className="results-header">
-          <p className="results-count">
-            {filtered.length} {filtered.length === 1 ? 'service' : 'services'} found
-            {filter !== 'all' && ` in ${categories.find(c => c.key === filter)?.label}`}
-          </p>
-        </div>
+        {sorted.length > 0 && (
+          <div className="results-header">
+            <p className="results-count">
+              Showing {sorted.length} {sorted.length === 1 ? 'service' : 'services'}
+            </p>
+          </div>
+        )}
 
-        {/* Services Grid/List */}
-        <div className={`services-container ${viewMode}-view`}>
-          {filtered.map((service) => {
+        {/* Services Grid */}
+        <div className="services-grid">
+          {sorted.map((service) => {
             const priceText = service.pricePer1000
-              ? `₹${Number(service.pricePer1000).toLocaleString()}`
-              : `₹${Number(service.pricePerUnit).toLocaleString()}`;
+              ? `${Number(service.pricePer1000).toLocaleString()}`
+              : `${Number(service.pricePerUnit).toLocaleString()}`;
 
-            const priceUnit = service.pricePer1000 ? '/ 1000' : '/ each';
+            const categoryObj = categories.find(c => c.key === service.category);
 
             return (
-              <div key={service._id} className="service-card">
-                <div className="card-header">
-                  <div className="premium-badge">
-                    <i className="fas fa-crown"></i> PREMIUM
-                  </div>
-                  <div className="service-category">{service.category}</div>
-                </div>
-
-                <div className="card-body">
-                  <div className="service-icon-wrapper">
-                    <i className={service.icon || 'fas fa-star'}></i>
-                  </div>
-
-                  <h3 className="service-title">{service.name}</h3>
-                  <p className="service-description">{service.description}</p>
-
-                  <div className="service-meta">
-                    <span className="service-id">
-                      <i className="fas fa-hashtag"></i>
-                      {service.serviceId || service._id.slice(-8)}
-                    </span>
+              <Link 
+                key={service._id}
+                to={`/services/${service._id}`}
+                className="service-card-link"
+              >
+                <div className="service-card">
+                  {/* Icon Section */}
+                  <div className="card-icon-wrapper">
+                    <div className="icon-background">
+                      <i className={service.icon || 'fas fa-star'}></i>
+                    </div>
+                    {service.isPremium && <div className="premium-badge">👑</div>}
                   </div>
 
-                  <div className="pricing-section">
-                    <div className="price-tag">
-                      <span className="price-label">Starting at</span>
-                      <div className="price-amount">
-                        <span className="price">{priceText}</span>
-                        <span className="price-unit">{priceUnit}</span>
-                      </div>
+                  {/* Content Section */}
+                  <div className="card-content">
+                    <div className="service-header">
+                      <h3 className="service-title">{service.name}</h3>
+                      {categoryObj && (
+                        <span className="category-tag" style={{ backgroundColor: categoryObj.color + '20', color: categoryObj.color }}>
+                          {service.category}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="service-description">{service.description}</p>
+
+                    <div className="service-stats">
+                      {service.salesCount && (
+                        <span className="stat"><i className="fas fa-shopping-cart"></i> {service.salesCount}</span>
+                      )}
+                      {service.rating && (
+                        <span className="stat"><i className="fas fa-star"></i> {service.rating}</span>
+                      )}
                     </div>
                   </div>
-                </div>
 
-                <div className="card-footer">
-                  <Link to={`/services/${service._id}`} className="btn-view-service">
-                    <span>View Details</span>
-                    <i className="fas fa-arrow-right"></i>
-                  </Link>
+                  {/* Price Section */}
+                  <div className="card-footer">
+                    <div className="price-section">
+                      <span className="price-label">Price</span>
+                      <span className="price-amount">₹{priceText}</span>
+                    </div>
+                    <button className="btn-view">
+                      <span>View</span>
+                      <i className="fas fa-arrow-right"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
+        </div>
 
-          {filtered.length === 0 && (
+        {/* No Results State */}
+        {sorted.length === 0 && (
+          <div className="no-results-container">
             <div className="no-results">
               <i className="fas fa-search"></i>
               <h3>No Services Found</h3>
               <p>
                 {search
                   ? `No services match your search "${search}"`
-                  : `No services available in the ${categories.find(c => c.key === filter)?.label} category`}
+                  : filter !== 'all'
+                  ? `No services available in ${categories.find(c => c.key === filter)?.label}`
+                  : 'No services available yet'}
               </p>
-              <button className="btn-primary" onClick={handleReset}>
-                <i className="fas fa-redo"></i> View All Services
-              </button>
+              {(search || filter !== 'all') && (
+                <button className="btn-primary" onClick={handleReset}>
+                  <i className="fas fa-redo"></i> Clear Filters
+                </button>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

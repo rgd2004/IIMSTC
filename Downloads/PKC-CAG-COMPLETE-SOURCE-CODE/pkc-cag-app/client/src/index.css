@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+/* Global: disable all CSS animations so UI is static and only moves when user scrolls */
+*, *::before, *::after {
+  animation: none !important;
+}
+
 :root {
   --primary: #6366f1;
   --secondary: #8b5cf6;
@@ -25,7 +30,6 @@
 body {
   font-family: 'Sora', sans-serif;
   background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
-  background-attachment: fixed;
   color: var(--light);
   overflow-x: hidden;
   line-height: 1.6;
@@ -34,7 +38,6 @@ body {
 #root {
   min-height: 100vh;
   background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
-  background-attachment: fixed;
 }
 
 /* Scrollbar */

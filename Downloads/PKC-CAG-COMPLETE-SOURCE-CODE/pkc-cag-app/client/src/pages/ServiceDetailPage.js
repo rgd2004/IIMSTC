@@ -9,12 +9,11 @@ const ServiceDetailPage = () => {
   const navigate = useNavigate();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1000);
-  const [activeTab, setActiveTab] = useState('features');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     fetchService();
-    // eslint-disable-next-line
   }, [id]);
 
   const fetchService = async () => {
@@ -35,23 +34,9 @@ const ServiceDetailPage = () => {
     }
   };
 
-  const calculatePrice = () => {
-    if (!service) return 0;
-    
-    if (service.pricePer1000) {
-      return ((quantity / 1000) * service.pricePer1000).toFixed(2);
-    }
-    return (quantity * service.pricePerUnit).toFixed(2);
+  const buyNow = () => {
+    navigate(`/checkout/${service._id || service.id}`);
   };
-
-  const handleQuantityChange = (value) => {
-    const num = parseInt(value) || 0;
-    setQuantity(Math.max(0, num));
-  };
-
-  const quickQuantities = service?.pricePer1000 
-    ? [1000, 2500, 5000, 10000, 25000]
-    : [10, 25, 50, 100, 500];
 
   if (loading) {
     return (
@@ -66,259 +51,248 @@ const ServiceDetailPage = () => {
 
   return (
     <div className="service-detail-page">
-      {/* Breadcrumb Navigation */}
-      <div className="breadcrumb-container">
+      {/* Header */}
+      <div className="detail-header">
         <div className="container">
-          <div className="breadcrumb">
-            <button onClick={() => navigate('/')} className="breadcrumb-item">
-              <i className="fas fa-home"></i> Home
-            </button>
-            <i className="fas fa-chevron-right breadcrumb-separator"></i>
-            <button onClick={() => navigate('/services')} className="breadcrumb-item">
-              Services
-            </button>
-            <i className="fas fa-chevron-right breadcrumb-separator"></i>
-            <span className="breadcrumb-item active">{service.name}</span>
-          </div>
+          <button className="back-button" onClick={() => navigate('/services')}>
+            <i className="fas fa-arrow-left"></i>
+            <span>Back to Services</span>
+          </button>
         </div>
       </div>
 
       <div className="container">
-        <div className="service-detail-grid">
-          {/* Left Column - Service Info */}
-          <div className="service-info-column">
-            {/* Service Header Card */}
-            <div className="info-card service-header-card">
-              <div className="service-header">
-                <div className="service-icon-large">
+        {/* Main Grid */}
+        <div className="detail-grid">
+          {/* Left Content */}
+          <div className="detail-main">
+            {/* Service Hero */}
+            <div className="service-hero-section">
+              <div className="service-icon-container">
+                <div className="service-icon">
                   <i className={service.icon || 'fas fa-star'}></i>
                 </div>
+                {service.isPremium && <div className="premium-badge-large">👑 Premium</div>}
+              </div>
 
-                <div className="header-content">
-                  <div className="badges-row">
-                    <span className="premium-badge">
-                      <i className="fas fa-crown"></i> PREMIUM
-                    </span>
-                    <span className="category-badge">{service.category}</span>
-                  </div>
+              <div className="service-info">
+                <div className="service-header-top">
+                  <h1 className="service-name">{service.name}</h1>
+                  <span className="service-category-tag">{service.category}</span>
+                </div>
 
-                  <h1 className="service-title">{service.name}</h1>
-                  <p className="service-description">{service.description}</p>
+                <p className="service-desc">{service.description}</p>
 
-                  <div className="service-meta-row">
-                    <div className="meta-item">
-                      <i className="fas fa-hashtag"></i>
-                      <span>ID: {service.serviceId || service._id?.slice(-8)}</span>
+                <div className="service-stats-row">
+                  {service.salesCount && (
+                    <div className="stat-badge">
+                      <i className="fas fa-shopping-cart"></i>
+                      <span>{service.salesCount.toLocaleString()} Sales</span>
                     </div>
-                    {service.deliveryTime && (
-                      <div className="meta-item">
-                        <i className="fas fa-clock"></i>
-                        <span>{service.deliveryTime}</span>
-                      </div>
-                    )}
-                    <div className="meta-item">
-                      <i className="fas fa-shield-check"></i>
-                      <span>Guaranteed</span>
+                  )}
+                  {service.rating && (
+                    <div className="stat-badge">
+                      <i className="fas fa-star"></i>
+                      <span>{service.rating}/5 Rating</span>
                     </div>
+                  )}
+                  <div className="stat-badge">
+                    <i className="fas fa-bolt"></i>
+                    <span>Instant Delivery</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Tabs Section */}
-            <div className="info-card tabs-card">
-              <div className="tabs-header">
-                <button
-                  className={`tab-button ${activeTab === 'features' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('features')}
-                >
-                  <i className="fas fa-list-check"></i>
-                  Features
-                </button>
-                <button
-                  className={`tab-button ${activeTab === 'details' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('details')}
-                >
-                  <i className="fas fa-info-circle"></i>
-                  Details
-                </button>
-                <button
-                  className={`tab-button ${activeTab === 'faq' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('faq')}
-                >
-                  <i className="fas fa-question-circle"></i>
-                  FAQ
-                </button>
+            {/* Tabs */}
+            <div className="tabs-section">
+              <div className="tabs-nav">
+                {[
+                  { key: 'overview', label: 'Overview', icon: 'fas fa-info-circle' },
+                  { key: 'features', label: 'Features', icon: 'fas fa-list' },
+                  { key: 'faq', label: 'FAQ', icon: 'fas fa-question-circle' }
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    className={`tab-button ${activeTab === tab.key ? 'active' : ''}`}
+                    onClick={() => setActiveTab(tab.key)}
+                  >
+                    <i className={tab.icon}></i>
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
               </div>
 
+              {/* Tab Content */}
               <div className="tabs-content">
-                {activeTab === 'features' && (
-                  <div className="tab-panel">
-                    <h3>What's Included:</h3>
-                    <ul className="features-list">
-                      {(service.features || [
-                        'High Quality Service',
-                        'Fast Delivery',
-                        '24/7 Support',
-                        'No Password Required',
-                        'Safe & Secure'
-                      ]).map((f, i) => (
-                        <li key={i}>
-                          <div className="feature-icon">
-                            <i className="fas fa-check-circle"></i>
-                          </div>
-                          <span>{f}</span>
-                        </li>
+                {/* Overview Tab */}
+                {activeTab === 'overview' && (
+                  <div className="tab-pane">
+                    <div className="benefits-grid">
+                      {[
+                        { icon: '⚡', title: 'Instant Delivery', desc: 'Start within minutes' },
+                        { icon: '🔒', title: '100% Secure', desc: 'Safe & protected' },
+                        { icon: '✓', title: 'Quality Guaranteed', desc: '30-day guarantee' },
+                        { icon: '🎯', title: 'Best Results', desc: 'Real engagement' }
+                      ].map((benefit, i) => (
+                        <div key={i} className="benefit-card">
+                          <div className="benefit-icon">{benefit.icon}</div>
+                          <h4>{benefit.title}</h4>
+                          <p>{benefit.desc}</p>
+                        </div>
                       ))}
-                    </ul>
-                  </div>
-                )}
+                    </div>
 
-                {activeTab === 'details' && (
-                  <div className="tab-panel">
-                    <h3>Service Details:</h3>
-                    <div className="details-grid">
-                      <div className="detail-item">
-                        <i className="fas fa-bolt"></i>
-                        <div>
-                          <strong>Start Time</strong>
-                          <p>Instant - 1 Hour</p>
+                    <div className="info-box">
+                      <h3>Service Details</h3>
+                      <dl className="details-list">
+                        <div className="detail-item">
+                          <dt>Service ID</dt>
+                          <dd>{service.serviceId || service._id.slice(0, 8)}</dd>
                         </div>
-                      </div>
-                      <div className="detail-item">
-                        <i className="fas fa-rocket"></i>
-                        <div>
-                          <strong>Speed</strong>
-                          <p>Fast Delivery</p>
+                        <div className="detail-item">
+                          <dt>Category</dt>
+                          <dd className="capitalize">{service.category}</dd>
                         </div>
-                      </div>
-                      <div className="detail-item">
-                        <i className="fas fa-shield-alt"></i>
-                        <div>
-                          <strong>Quality</strong>
-                          <p>Premium Quality</p>
+                        <div className="detail-item">
+                          <dt>Delivery Time</dt>
+                          <dd>{service.deliveryTime || '0-1 hour'}</dd>
                         </div>
-                      </div>
-                      <div className="detail-item">
-                        <i className="fas fa-sync"></i>
-                        <div>
-                          <strong>Refill</strong>
-                          <p>30 Days Guarantee</p>
-                        </div>
-                      </div>
+                        {service.minQuantity && (
+                          <div className="detail-item">
+                            <dt>Minimum Order</dt>
+                            <dd>{service.minQuantity.toLocaleString()}</dd>
+                          </div>
+                        )}
+                      </dl>
                     </div>
                   </div>
                 )}
 
+                {/* Features Tab */}
+                {activeTab === 'features' && (
+                  <div className="tab-pane">
+                    <div className="features-list">
+                      <h3>What's Included</h3>
+                      {(service.features || [
+                        '✓ High Quality Service',
+                        '✓ Fast Delivery',
+                        '✓ 24/7 Support',
+                        '✓ Safe & Secure',
+                        '✓ 30 Days Guarantee',
+                        '✓ Premium Package'
+                      ]).map((feature, i) => (
+                        <div key={i} className="feature-item">
+                          <div className="feature-check">
+                            <i className="fas fa-check"></i>
+                          </div>
+                          <span>{feature.replace(/^✓\s*/, '')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* FAQ Tab */}
                 {activeTab === 'faq' && (
-                  <div className="tab-panel">
-                    <h3>Frequently Asked Questions:</h3>
+                  <div className="tab-pane">
                     <div className="faq-list">
-                      <div className="faq-item">
-                        <h4><i className="fas fa-question-circle"></i> How long does delivery take?</h4>
-                        <p>Delivery starts within 0-1 hours and completes based on the quantity ordered.</p>
-                      </div>
-                      <div className="faq-item">
-                        <h4><i className="fas fa-question-circle"></i> Is it safe to use?</h4>
-                        <p>Yes, absolutely! Our services are 100% safe and compliant with platform guidelines.</p>
-                      </div>
-                      <div className="faq-item">
-                        <h4><i className="fas fa-question-circle"></i> Do you offer refills?</h4>
-                        <p>Yes, we provide 30 days refill guarantee on all our premium services.</p>
-                      </div>
-                      <div className="faq-item">
-                        <h4><i className="fas fa-question-circle"></i> What payment methods do you accept?</h4>
-                        <p>We accept all major payment methods including UPI, cards, and wallets.</p>
-                      </div>
+                      {[
+                        { q: 'How long does delivery take?', a: 'Delivery typically starts within 0-1 hours after order confirmation.' },
+                        { q: 'Is the service safe?', a: '100% safe, secure, and compliant with all platform policies.' },
+                        { q: 'Do you offer refunds/refills?', a: 'Yes, we offer 30-day money-back guarantee and refills.' },
+                        { q: 'What payment methods do you accept?', a: 'We accept all major payment methods including cards, UPI, and digital wallets.' },
+                        { q: 'Is there customer support?', a: 'Yes, 24/7 customer support available via chat and email.' }
+                      ].map((item, i) => (
+                        <div key={i} className="faq-item">
+                          <div className="faq-question">
+                            <i className="fas fa-question-circle"></i>
+                            <strong>{item.q}</strong>
+                          </div>
+                          <p className="faq-answer">{item.a}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="info-card trust-card">
-              <h3>Why Choose Us?</h3>
-              <div className="trust-grid">
-                <div className="trust-item">
-                  <i className="fas fa-shield-check"></i>
-                  <h4>100% Safe</h4>
-                  <p>Secure & Reliable</p>
-                </div>
-                <div className="trust-item">
-                  <i className="fas fa-headset"></i>
-                  <h4>24/7 Support</h4>
-                  <p>Always Here to Help</p>
-                </div>
-                <div className="trust-item">
-                  <i className="fas fa-bolt"></i>
-                  <h4>Instant Start</h4>
-                  <p>Quick Processing</p>
-                </div>
-                <div className="trust-item">
-                  <i className="fas fa-award"></i>
-                  <h4>Premium Quality</h4>
-                  <p>Best Results</p>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Order Card (Sticky) */}
-          <div className="order-column">
-            <div className="order-card sticky-card">
-              <div className="order-card-header">
-                <h2>Place Your Order</h2>
-                <p>Choose quantity and proceed to checkout</p>
+          {/* Right Sidebar - Order Card */}
+          <div className="detail-sidebar">
+            <div className="order-card">
+              {/* Service Provider Info */}
+              <div className="provider-section">
+                <div className="provider-avatar">
+                  <i className="fas fa-user-circle"></i>
+                </div>
+                <div className="provider-info">
+                  <p className="provider-label">Service Provider</p>
+                  <h4>{service.createdBy?.name || 'Premium Provider'}</h4>
+                  {service.rating && (
+                    <div className="provider-rating">
+                      <i className="fas fa-star"></i>
+                      <span>{service.rating.toFixed(1)} ({service.salesCount || 0} reviews)</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="order-card-body">
-              
-                {/* Order Button */}
-                <button
-                  className="btn-order-now"
-                  onClick={() => navigate(`/checkout/${service._id || service.id}`)}
-                  disabled={quantity <= 0}
-                >
-                  <i className="fas fa-shopping-cart"></i>
-                  <span>Proceed to Checkout</span>
-                  <i className="fas fa-arrow-right"></i>
-                </button>
+              {/* Price Display */}
+              <div className="price-display-card">
+                <span className="price-label">Starting From</span>
+                <div className="price-amount">
+                  <span className="currency">₹</span>
+                  <span className="amount">{service.pricePer1000 ? service.pricePer1000 : service.pricePerUnit}</span>
+                  {service.pricePer1000 && <span className="price-unit">/1000</span>}
+                </div>
+              </div>
 
-                {/* Additional Info */}
-                <div className="order-info">
-                  <div className="info-item">
-                    <i className="fas fa-lock"></i>
-                    <span>Secure Payment</span>
+              {/* Key Features Highlights */}
+              <div className="highlights-section">
+                <h5>What You Get</h5>
+                <div className="highlights-list">
+                  <div className="highlight-item">
+                    <i className="fas fa-bolt"></i>
+                    <span>Instant Delivery</span>
                   </div>
-                  <div className="info-item">
-                    <i className="fas fa-undo"></i>
-                    <span>Money Back Guarantee</span>
+                  <div className="highlight-item">
+                    <i className="fas fa-shield-alt"></i>
+                    <span>100% Secure</span>
+                  </div>
+                  <div className="highlight-item">
+                    <i className="fas fa-redo"></i>
+                    <span>30-Day Guarantee</span>
+                  </div>
+                  <div className="highlight-item">
+                    <i className="fas fa-headset"></i>
+                    <span>24/7 Support</span>
                   </div>
                 </div>
               </div>
 
-              {/* Delivery Info Banner */}
-              {service.deliveryTime && (
-                <div className="delivery-banner">
-                  <i className="fas fa-truck"></i>
-                  <div>
-                    <strong>Fast Delivery</strong>
-                    <p>{service.deliveryTime}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Need Help Card */}
-            <div className="help-card">
-              <i className="fas fa-headset"></i>
-              <h3>Need Help?</h3>
-              <p>Our support team is available 24/7 to assist you</p>
-              <button className="btn-contact">
-                <i className="fas fa-comment"></i>
-                Contact Support
+              {/* CTA Buttons */}
+              <button
+                onClick={buyNow}
+                className="btn-buy-now"
+              >
+                <i className="fas fa-shopping-bag"></i>
+                <span>Buy Now</span>
               </button>
+
+              <button className="btn-contact">
+                <i className="fas fa-envelope"></i>
+                <span>Contact Seller</span>
+              </button>
+
+              {/* Info Box */}
+              <div className="info-footer">
+                <p>
+                  <i className="fas fa-info-circle"></i>
+                  <span>You'll select quantity at checkout</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import API from '../utils/api';
 import '../styles/EBookHub.css';
 
@@ -17,175 +18,72 @@ const MyLibrary = () => {
   const fetchMyEbooks = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        alert('Please login to view your library');
-        navigate('/login');
-        return;
-      }
 
-      const myEbooksRes = await API.get('/ebooks/my-ebooks', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      console.log('📖 My e-books fetched:', myEbooksRes.data);
-      setMyEbooks(myEbooksRes.data.ebooks || []);
-    } catch (error) {
-      console.error('❌ Error fetching my e-books:', error);
+      const res = await API.get('/ebooks/my-ebooks');
+      setMyEbooks(res.data.ebooks || []);
+    } catch (err) {
+      console.error('❌ Error fetching library:', err);
       alert('Failed to load your library');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = async (purchaseId) => {
+  const handleDownload = async (purchaseId, title = 'ebook') => {
     try {
-      const response = await API.get(
+      const res = await API.get(
         `/ebooks/purchase/${purchaseId}/download`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }
+        { responseType: 'blob' }
       );
 
-      if (response.data.downloadUrl) {
-        const baseURL = window.location.origin;
-        const pdfUrl = response.data.downloadUrl.startsWith('http') 
-          ? response.data.downloadUrl 
-          : `${baseURL}${response.data.downloadUrl}`;
-        
-        const pdfResponse = await axios.get(pdfUrl, { responseType: 'blob' });
-        const blobUrl = window.URL.createObjectURL(new Blob([pdfResponse.data]));
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = `${response.data.ebookTitle || 'ebook'}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        window.URL.revokeObjectURL(blobUrl);
-        document.body.removeChild(link);
-      }
-    } catch (error) {
-      console.error('Download error:', error);
-      alert('Failed to download e-book');
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${title}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('❌ Download failed:', err);
+      alert('Download failed');
     }
   };
 
-  const filteredEbooks = myEbooks.filter(item => {
-    const matchesSearch = item.ebook.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (item.ebook.author && item.ebook.author.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = filterCategory === 'all' || item.ebook.category === filterCategory;
-    return matchesSearch && matchesCategory;
+  const filtered = myEbooks.filter(item => {
+    if (!item.ebook) return false;
+    const t = item.ebook.title.toLowerCase();
+    return t.includes(searchTerm.toLowerCase()) &&
+      (filterCategory === 'all' || item.ebook.category === filterCategory);
   });
-
-  const categories = ['all', 'Technology', 'Science', 'Business', 'Self-Help', 'Fiction', 'Non-Fiction', 'Education'];
 
   return (
     <div className="ebook-hub-container">
-      {/* Header */}
-      <div className="hub-header">
-        <div className="header-content">
-          <h1>📖 My Library</h1>
-          <p>Manage and download your purchased e-books</p>
-        </div>
-      </div>
+      <h1>📖 My Library</h1>
 
-      {/* Search & Filter Section */}
-      <div className="hub-controls">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="🔍 Search e-books..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+      <input
+        placeholder="Search…"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
 
-        <div className="filter-bar">
-          <select 
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="category-filter"
-          >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>
-                {cat === 'all' ? 'All Categories' : cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button 
-          className="btn-back"
-          onClick={() => navigate('/ebooks-hub')}
-        >
-          ← Back to Hub
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="tab-content">
-        {loading ? (
-          <div className="loading-state">
-            <div className="spinner"></div>
-            <p>Loading your library...</p>
+      {loading ? (
+        <p>Loading…</p>
+      ) : (
+        filtered.map(item => (
+          <div key={item._id}>
+            <h3>{item.ebook.title}</h3>
+            <button
+              onClick={() => handleDownload(item._id, item.ebook.title)}
+            >
+              Download
+            </button>
           </div>
-        ) : (
-          <div className="library-tab">
-            {filteredEbooks.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon">📚</div>
-                <h3>Your library is empty</h3>
-                <p>Browse and purchase e-books to add them to your library</p>
-                <button 
-                  className="btn-primary"
-                  onClick={() => navigate('/browse-ebooks')}
-                >
-                  Browse E-Books
-                </button>
-              </div>
-            ) : (
-              <div className="library-list">
-                {filteredEbooks.map(item => (
-                  <div key={item._id} className="library-item">
-                    {item.ebook.coverImage && (
-                      <div className="item-cover">
-                        <img src={item.ebook.coverImage} alt={item.ebook.title} />
-                      </div>
-                    )}
-                    <div className="item-content">
-                      <h3>{item.ebook.title}</h3>
-                      <p className="item-author">{item.ebook.author || 'Unknown Author'}</p>
-                      <div className="item-stats">
-                        <span>📅 Purchased: {new Date(item.createdAt).toLocaleDateString()}</span>
-                        <span>📥 Downloaded: {item.downloadsCount} times</span>
-                        {item.lastDownloadedAt && (
-                          <span>⏰ Last: {new Date(item.lastDownloadedAt).toLocaleDateString()}</span>
-                        )}
-                      </div>
-                      <p className="item-category">{item.ebook.category}</p>
-                    </div>
-                    <div className="item-actions">
-                      <button 
-                        className="btn-download"
-                        onClick={() => handleDownload(item._id)}
-                        title="Download E-Book"
-                      >
-                        📥 Download
-                      </button>
-                      <button 
-                        className="btn-view"
-                        onClick={() => navigate(`/ebook/${item.ebook._id}`)}
-                        title="View Details"
-                      >
-                        👁️ View
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+        ))
+      )}
     </div>
   );
 };

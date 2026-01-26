@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   axios.defaults.baseURL =
-    process.env.REACT_APP_API_URL || "https://api.pkccag.com/api";
+	process.env.REACT_APP_API_URL || "/api";
 
   // Fetch logged-in user
   const fetchMe = useCallback(async () => {

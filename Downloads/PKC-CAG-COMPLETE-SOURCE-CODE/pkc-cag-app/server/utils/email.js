@@ -1,48 +1,94 @@
 const nodemailer = require("nodemailer");
+const fs = require("fs");
+const path = require("path");
 
 // ======================================================
-// 🚀 CREATE TRANSPORTER (GMAIL APP PASSWORD REQUIRED)
+// 🚀 EMAIL TRANSPORT SETUP (Resend when available)
 // ======================================================
 
-// Check if environment variables are set
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-  console.error("❌ ERROR: Missing email configuration!");
-  console.error("   EMAIL_USER:", process.env.EMAIL_USER ? "✅ Set" : "❌ NOT SET");
-  console.error("   EMAIL_PASS:", process.env.EMAIL_PASS ? "✅ Set" : "❌ NOT SET");
-  console.error("\n📝 Please add these environment variables to Render:");
-  console.error("   1. Go to Dashboard > Select your service");
-  console.error("   2. Environment tab > Add Private Environment Variables");
-  console.error("   3. Add: EMAIL_USER=pkccag@gmail.com");
-  console.error("   4. Add: EMAIL_PASS=<Gmail App Password from Gmail Security settings>");
-}
+// If RESEND_API_KEY is set, always prefer Resend (works on Render even if SMTP is blocked)
+const usingResend = !!process.env.RESEND_API_KEY;
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER, // e.g. pkccag@gmail.com
-    pass: process.env.EMAIL_PASS, // Gmail App Password
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+let transporter;
 
-// Verify transporter connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Email transporter error:", error.message);
-    console.error("⚠️  Email notifications will NOT work");
-  } else {
-    console.log("✅ Email transporter verified and ready");
+if (usingResend) {
+  // Use Resend HTTP API in production (avoids blocked SMTP on Render)
+  const { Resend } = require("resend");
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  const DEFAULT_FROM = process.env.EMAIL_FROM || "PKC CAG <no-reply@pkccag.com>";
+
+  transporter = {
+    async sendMail(mailOptions) {
+      const from = mailOptions.from || DEFAULT_FROM;
+      const to = mailOptions.to;
+      const subject = mailOptions.subject;
+      const html = mailOptions.html || "";
+
+      if (!to) {
+        console.warn("sendMail called without 'to' address");
+        return { messageId: null };
+      }
+
+      try {
+        const result = await resend.emails.send({
+          from,
+          to,
+          subject,
+          html,
+        });
+        console.log("✅ Email sent via Resend:", result.id || result);
+        return { messageId: result.id || null };
+      } catch (error) {
+        console.error("❌ Resend email error:", error);
+        throw error;
+      }
+    },
+  };
+
+  console.log("📧 Email: Using Resend in production (RESEND_API_KEY detected)");
+} else {
+  // Fallback to Nodemailer SMTP (for local development or when RESEND_API_KEY is not configured)
+
+  // Check if environment variables are set
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error("❌ ERROR: Missing email SMTP configuration!");
+    console.error("   EMAIL_USER:", process.env.EMAIL_USER ? "✅ Set" : "❌ NOT SET");
+    console.error("   EMAIL_PASS:", process.env.EMAIL_PASS ? "✅ Set" : "❌ NOT SET");
   }
-});
+
+  transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // use TLS
+    auth: {
+      user: process.env.EMAIL_USER, // e.g. pkccag@gmail.com
+      pass: process.env.EMAIL_PASS, // Gmail App Password (App Password required)
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  // Verify transporter connection (only for SMTP mode)
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error("❌ Email transporter error:", error.message);
+      console.error("⚠️  Email notifications may NOT work");
+    } else {
+      console.log("✅ Email transporter verified and ready");
+    }
+  });
+}
 
 // ======================================================
 // 1️⃣ SEND OTP EMAIL
 // ======================================================
 exports.sendOTPEmail = async (email, otp, name) => {
   const mailOptions = {
-    from: `PKC CAG <${process.env.EMAIL_USER}>`,
+    from:
+      process.env.EMAIL_FROM ||
+      `PKC CAG <${process.env.EMAIL_USER || "no-reply@pkccag.com"}>`,
     to: email,
     subject: "Verify Your Email - PKC CAG",
     html: `
@@ -116,11 +162,11 @@ exports.sendOTPEmail = async (email, otp, name) => {
   };
 
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!usingResend && (!process.env.EMAIL_USER || !process.env.EMAIL_PASS)) {
       console.error("❌ Cannot send OTP email - EMAIL_USER or EMAIL_PASS not configured");
       throw new Error("Email credentials not configured on server");
     }
-    
+
     console.log(`📧 Sending OTP email to: ${email}`);
     const info = await transporter.sendMail(mailOptions);
     console.log(`✅ OTP email sent successfully to ${email}`);
@@ -2407,40 +2453,40 @@ exports.sendEbookDeliveryEmail = async (email, name, ebook, purchaseId) => {
       </div>
     `;
 
-    // Prepare PDF attachment from uploaded file
+    // Prepare attachments array
     const attachments = [];
-    if (ebook.pdfFile) {
+
+    // Try to attach the PDF file if it exists
+    if (ebook && ebook.pdfFile) {
       try {
-        const fs = require('fs');
-        const path = require('path');
-        
-        // Construct full path to the PDF file
-        const pdfPath = path.join(__dirname, '..', ebook.pdfFile);
-        
-        console.log('📂 Looking for PDF at:', pdfPath);
-        
+        const pdfPath = path.join(__dirname, "..", ebook.pdfFile);
+
+        console.log("📂 Looking for PDF at:", pdfPath);
+
         if (fs.existsSync(pdfPath)) {
           const pdfBuffer = fs.readFileSync(pdfPath);
           attachments.push({
-            filename: `${ebook.title.replace(/[^a-z0-9]/gi, '_').substring(0, 50)}.pdf`,
+            filename: `${ebook.title.replace(/[^a-z0-9]/gi, "_").substring(0, 50)}.pdf`,
             content: pdfBuffer,
-            contentType: 'application/pdf'
+            contentType: "application/pdf",
           });
-          console.log('✅ PDF file attached to email from:', pdfPath);
+          console.log("✅ PDF file attached to email from:", pdfPath);
         } else {
-          console.warn('⚠️ PDF file not found at:', pdfPath);
-          console.warn('   Note: File path in DB:', ebook.pdfFile);
+          console.warn("⚠️ PDF file not found at:", pdfPath);
+          console.warn("   Note: File path in DB:", ebook.pdfFile);
         }
       } catch (err) {
-        console.warn('⚠️ Could not attach PDF:', err.message);
+        console.warn("⚠️ Could not attach PDF:", err.message);
         // Continue sending email without attachment
       }
     } else {
-      console.warn('⚠️ No PDF file found in ebook object');
+      console.warn("⚠️ No PDF file found in ebook object");
     }
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from:
+        process.env.EMAIL_FROM ||
+        `PKC CAG <${process.env.EMAIL_USER || "no-reply@pkccag.com"}>`,
       to: email,
       subject: `📚 Your E-Book: "${ebook.title}" is Ready!`,
       html: htmlContent,
@@ -2448,16 +2494,16 @@ exports.sendEbookDeliveryEmail = async (email, name, ebook, purchaseId) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('✅ E-Book delivery email sent to:', email, attachments.length > 0 ? '✅ with PDF' : '(no attachment)');
+    console.log(
+      "✅ E-Book delivery email sent to:",
+      email,
+      attachments.length > 0 ? "✅ with PDF" : "(no attachment)"
+    );
   } catch (err) {
-    console.error('❌ E-Book email error:', err);
+    console.error("❌ E-Book email error:", err);
     throw err;
   }
 };
-
-transporter.verify((err, success) => {
-  console.log("SMTP TEST:", err || "SMTP Connected");
-});
 
 // ======================================================
 // GENERIC SEND EMAIL WITH ATTACHMENT SUPPORT
@@ -2466,14 +2512,16 @@ exports.sendEmail = async (emailData) => {
   const { email, subject, html, attachments } = emailData;
 
   // Validate email configuration
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  if (!usingResend && (!process.env.EMAIL_USER || !process.env.EMAIL_PASS)) {
     const errorMsg = "Email credentials not configured on server (EMAIL_USER or EMAIL_PASS missing)";
     console.error("❌", errorMsg);
     throw new Error(errorMsg);
   }
 
   const mailOptions = {
-    from: `PKC CAG <${process.env.EMAIL_USER}>`,
+    from:
+      process.env.EMAIL_FROM ||
+      `PKC CAG <${process.env.EMAIL_USER || "no-reply@pkccag.com"}>`,
     to: email,
     subject: subject,
     html: html,

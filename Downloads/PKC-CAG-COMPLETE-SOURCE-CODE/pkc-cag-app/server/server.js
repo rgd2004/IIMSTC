@@ -20,8 +20,6 @@ const passport = require("./config/passport");
 // APP INIT
 // ---------------------------------------------
 const app = express();
-
-// Important for Render / reverse proxies
 app.set("trust proxy", 1);
 
 // ---------------------------------------------
@@ -33,8 +31,6 @@ connectDB();
 // ---------------------------------------------
 // SECURITY
 // ---------------------------------------------
-
-// Rate limiter
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
@@ -44,34 +40,23 @@ const limiter = rateLimit({
 app.use(helmet());
 
 // ---------------------------------------------
-// ✅ FINAL CORS CONFIG (PRODUCTION + PREVIEWS)
+// ✅ FINAL CORS CONFIG
 // ---------------------------------------------
 const allowedOrigins = [
   "https://pkccag.com",
   "https://www.pkccag.com",
   "https://api.pkccag.com",
   "http://localhost:3000",
-  "http://localhost:5000",
-  "http://127.0.0.1:5000"
+  "http://localhost:5000"
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow server-to-server / Postman
       if (!origin) return callback(null, true);
-
-      // Allow production domains
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // Allow ALL Vercel preview deployments
-      if (origin.endsWith(".vercel.app")) {
-        return callback(null, true);
-      }
-
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (origin.endsWith(".vercel.app")) return callback(null, true);
+      return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -125,6 +110,18 @@ app.use((req, res, next) => {
 });
 
 // ---------------------------------------------
+// 🔥 CRITICAL FIX: DOUBLE /api/api REWRITE
+// MUST BE BEFORE ROUTES
+// ---------------------------------------------
+app.use((req, res, next) => {
+  if (req.url.startsWith("/api/api/")) {
+    console.warn("⚠️ Rewriting double /api:", req.url);
+    req.url = req.url.replace("/api/api/", "/api/");
+  }
+  next();
+});
+
+// ---------------------------------------------
 // ROUTES
 // ---------------------------------------------
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -135,6 +132,7 @@ app.use("/api/referral", require("./routes/referralRoutes"));
 app.use("/api/withdrawals", require("./routes/withdrawalRoutes"));
 app.use("/api/updates", require("./routes/updateRoutes"));
 app.use("/api/user-profile", require("./routes/userProfileRoutes"));
+// Job Assistant API (kept) - separate from freelancing marketplace
 app.use("/api/job-assistant", require("./routes/jobAssistantRoutes"));
 
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
@@ -147,96 +145,9 @@ app.use("/api/export", require("./routes/exportRoutes"));
 app.use("/api/level", require("./routes/levelRoutes"));
 app.use("/api/activity", require("./routes/activityRoutes"));
 app.use("/api/messaging", require("./routes/messagingRoutes"));
-app.use("/api/marketplace", require("./routes/marketplaceRoutes"));
+// Freelancing marketplace routes disabled
+// app.use("/api/marketplace", require("./routes/marketplaceRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
-
-// ---------------------------------------------
-// TEST EMAIL ENDPOINT (DEBUGGING)
-// This endpoint checks email configuration without sending
-app.post("/api/test-email-config", (req, res) => {
-  try {
-    console.log("🧪 Checking email configuration...");
-    
-    const emailUser = process.env.EMAIL_USER;
-    const emailPass = process.env.EMAIL_PASS;
-    
-    console.log("EMAIL_USER set:", !!emailUser);
-    console.log("EMAIL_PASS set:", !!emailPass);
-    console.log("EMAIL_USER value:", emailUser);
-    console.log("EMAIL_PASS length:", emailPass ? emailPass.length : 0);
-    
-    res.json({
-      success: true,
-      message: "Email configuration check",
-      config: {
-        EMAIL_USER_SET: !!emailUser,
-        EMAIL_USER_VALUE: emailUser || "NOT SET",
-        EMAIL_PASS_LENGTH: emailPass ? emailPass.length : 0,
-        EMAIL_PASS_SET: !!emailPass
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// TEST EMAIL ENDPOINT (DEBUGGING)
-// This endpoint attempts to send a test email
-app.post("/api/test-email", async (req, res) => {
-  const { email } = req.body;
-  
-  if (!email) {
-    return res.status(400).json({
-      success: false,
-      message: "Email address required"
-    });
-  }
-
-  // Set a response timeout of 35 seconds
-  req.setTimeout(35000);
-  res.setTimeout(35000);
-
-  try {
-    console.log("🧪 Testing email to:", email);
-    
-    const { sendEmail } = require("./utils/email");
-    
-    const result = await sendEmail({
-      email: email,
-      subject: "🧪 PKC CAG Test Email",
-      html: `
-        <h2>✅ Test Email from PKC CAG</h2>
-        <p>If you received this email, the email system is working correctly!</p>
-        <p><strong>Sent at:</strong> ${new Date().toLocaleString()}</p>
-        <hr>
-        <p>This is a test email from your PKC CAG server.</p>
-        <p style="color: #667eea; font-weight: bold;">Email system is operational!</p>
-      `
-    });
-
-    console.log("✅ Test email result:", result);
-    
-    res.json({
-      success: true,
-      message: "Test email sent successfully",
-      email: email,
-      result: result
-    });
-
-  } catch (error) {
-    console.error("❌ Test email error:", error.message);
-    console.error("Full error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Test email failed",
-      error: error.message,
-      details: error.toString()
-    });
-  }
-});
 
 // ---------------------------------------------
 // HEALTH CHECK
@@ -276,6 +187,6 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log("🌐 Allowed production origins:", allowedOrigins);
-  console.log("🌐 Allowed preview origins: *.vercel.app");
+  console.log("🌐 Allowed origins:", allowedOrigins);
+  console.log("🌐 Vercel previews allowed (*.vercel.app)");
 });

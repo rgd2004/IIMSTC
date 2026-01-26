@@ -87,14 +87,6 @@ const AdminHub = () => {
       color: '#30cfd0',
     },
     {
-      id: 12,
-      title: 'Dispute Management',
-      icon: '⚖️',
-      description: 'Review, assign, and resolve contract disputes',
-      link: '/admin/disputes',
-      color: '#f97316',
-    },
-    {
       id: 13,
       title: 'Activity Monitor',
       icon: '👁️',
@@ -102,14 +94,7 @@ const AdminHub = () => {
       link: '/admin/activities',
       color: '#8b5cf6',
     },
-    {
-      id: 14,
-      title: 'Freelancing Hub',
-      icon: '🚀',
-      description: 'Access all freelancing management features',
-      link: '/admin/freelancing-hub',
-      color: '#667eea',
-    },
+    // Dispute management and freelancing hub options removed (freelancing-only)
     {
       id: 15,
       title: 'E-Books Management',
@@ -136,13 +121,7 @@ const AdminHub = () => {
           <h1>🏛️ Admin Control Center</h1>
           <p>Access all admin management tools and features</p>
         </div>
-        <button 
-          className="switch-hub-btn"
-          onClick={() => navigate('/admin/freelancing-hub')}
-          title="Switch to Freelancing Hub"
-        >
-          🔄 Freelancing Hub
-        </button>
+        {/* Freelancing Hub switch removed */}
       </div>
 
       {/* Stats Section */}

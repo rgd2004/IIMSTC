@@ -12,7 +12,6 @@ const RegisterPage = () => {
     email: '',
     password: '',
     phone: '',
-    businessName: '',
     referralCode: '',
   });
   const [loading, setLoading] = useState(false);
@@ -65,7 +64,6 @@ const RegisterPage = () => {
         email: formData.email.trim(),
         password: formData.password,
         phone: formData.phone?.trim() || '',
-        businessName: formData.businessName?.trim() || '',
       };
 
       if (formData.referralCode && formData.referralCode.trim() !== '') {
@@ -200,21 +198,6 @@ const RegisterPage = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Enter phone number"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="businessName">
-                <i className="fas fa-building"></i>
-                Business Name (Optional)
-              </label>
-              <input
-                id="businessName"
-                type="text"
-                name="businessName"
-                value={formData.businessName}
-                onChange={handleChange}
-                placeholder="Your business name"
               />
             </div>
 

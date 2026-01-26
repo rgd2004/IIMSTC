@@ -1,25 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './HomePage.css';
 
 const HomePage = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   return (
     <div className="home-page">
-      {/* Animated cursor glow */}
-      <div 
-        className="cursor-glow" 
-        style={{ left: mousePosition.x, top: mousePosition.y }}
-      />
 
       {/* Hero Section */}
       <section className="hero">
@@ -135,16 +120,6 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Floating particles */}
-        <div className="particles">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="particle" style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${5 + Math.random() * 10}s`
-            }}></div>
-          ))}
-        </div>
       </section>
 
       {/* Features Section */}

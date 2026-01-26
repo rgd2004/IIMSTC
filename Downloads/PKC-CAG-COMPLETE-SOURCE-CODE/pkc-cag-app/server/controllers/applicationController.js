@@ -58,17 +58,25 @@ exports.submitApplication = async (req, res) => {
     await job.save();
     console.log(`[submitApplication] Job updated with new application. Total: ${job.applicationsCount}`);
 
-    // 📧 Send email notification to client
-    const freelancer = await User.findById(req.user._id);
-    const client = await User.findById(job.clientId);
-    if (freelancer && client) {
-      await sendApplicationReceivedEmail(client.email, client.name, freelancer.name, job.title, application._id);
-    }
-
+    // Send response immediately (don't wait for email)
     res.status(201).json({ 
       success: true,
       message: 'Application submitted successfully', 
       data: application 
+    });
+
+    // 📧 Send email notification to client (asynchronously, non-blocking)
+    setImmediate(async () => {
+      try {
+        const freelancer = await User.findById(req.user._id);
+        const client = await User.findById(job.clientId);
+        if (freelancer && client) {
+          await sendApplicationReceivedEmail(client.email, client.name, freelancer.name, job.title, application._id);
+          console.log(`[submitApplication] Email sent to client ${client.email}`);
+        }
+      } catch (emailError) {
+        console.error('[submitApplication] Email send failed (non-blocking):', emailError.message);
+      }
     });
   } catch (error) {
     console.error('Error submitting application:', error);
@@ -226,13 +234,20 @@ exports.rejectApplication = async (req, res) => {
     application.rejectionReason = reason || 'Application was not selected';
     await application.save();
 
-    // 📧 Send email notification to freelancer
-    const freelancer = await User.findById(application.freelancerId);
-    if (freelancer) {
-      await sendApplicationRejectedEmail(freelancer.email, freelancer.name, job.title, reason || 'Your application was not selected');
-    }
-
     res.json({ success: true, message: 'Application rejected successfully' });
+
+    // 📧 Send email notification to freelancer (asynchronously, non-blocking)
+    setImmediate(async () => {
+      try {
+        const freelancer = await User.findById(application.freelancerId);
+        if (freelancer) {
+          await sendApplicationRejectedEmail(freelancer.email, freelancer.name, job.title, reason || 'Your application was not selected');
+          console.log(`[rejectApplication] Email sent to freelancer ${freelancer.email}`);
+        }
+      } catch (emailError) {
+        console.error('[rejectApplication] Email send failed (non-blocking):', emailError.message);
+      }
+    });
   } catch (error) {
     console.error('Error rejecting application:', error);
     res.status(500).json({ message: 'Error rejecting application', error: error.message });

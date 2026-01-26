@@ -21,7 +21,7 @@ import TermsPage from './pages/TermsPage';
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import UpdatesPage from "./pages/UpdatesPage";
 
-// 💼 JOB ASSISTANT PAGES
+// 💼 JOB ASSISTANT PAGES (enabled, separate from freelancing marketplace)
 import JobAssistantHub from './pages/JobAssistantHub';
 import JobAssistantPage from './pages/JobAssistantPage';
 import AdminJobAssistant from './pages/admin/AdminJobAssistant';
@@ -58,10 +58,11 @@ import AnalyticsDashboard from "./pages/admin/AnalyticsDashboard";
 import CouponManagement from "./pages/admin/CouponManagement";
 import ReviewModeration from "./pages/admin/ReviewModeration";
 import AdminRoleManagement from "./pages/admin/AdminRoleManagement";
-import AdminContracts from "./pages/admin/AdminContracts";
-import AdminJobs from "./pages/admin/AdminJobs";
-import AdminContractDetails from "./pages/admin/AdminContractDetails";
-import AdminDisputes from "./pages/admin/AdminDisputes";
+// Freelancing-only admin pages disabled
+// import AdminContracts from "./pages/admin/AdminContracts";
+// import AdminJobs from "./pages/admin/AdminJobs";
+// import AdminContractDetails from "./pages/admin/AdminContractDetails";
+// import AdminDisputes from "./pages/admin/AdminDisputes";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import UserProfilePage from "./pages/UserProfilePage";
 
@@ -78,27 +79,27 @@ import ActivityFeedHub from "./pages/ActivityFeedHub";
 import MyReviewsHub from "./pages/MyReviewsHub";
 import DataExportHub from "./pages/DataExportHub";
 
-// ⭐ MARKETPLACE IMPORTS
-import MarketplaceHub from "./pages/MarketplaceHub";
-import BrowseJobsPage from "./pages/marketplace/BrowseJobsPage";
-import JobDetailsPage from "./pages/marketplace/JobDetailsPage";
-import PostJobPage from "./pages/marketplace/PostJobPage";
-import MyJobsPage from "./pages/marketplace/MyJobsPage";
-import MyApplicationsPage from "./pages/marketplace/MyApplicationsPage";
-import ApplyJobPage from "./pages/marketplace/ApplyJobPage";
-import JobApplicationsPage from "./pages/marketplace/JobApplicationsPage";
-import ContractsPage from "./pages/marketplace/ContractsPage";
-import ContractDetailsPage from "./pages/marketplace/ContractDetailsPage";
-import FreelancerProfileViewPage from "./pages/marketplace/FreelancerProfileViewPage";
-import FreelancerProfilePage from "./pages/marketplace/FreelancerProfilePage";
-import DisputesPage from "./pages/marketplace/DisputesPage";
-import BrowseTalentPage from "./pages/marketplace/BrowseTalentPage";
+// ⭐ MARKETPLACE & FREELANCING IMPORTS (disabled)
+// import MarketplaceHub from "./pages/MarketplaceHub";
+// import BrowseJobsPage from "./pages/marketplace/BrowseJobsPage";
+// import JobDetailsPage from "./pages/marketplace/JobDetailsPage";
+// import PostJobPage from "./pages/marketplace/PostJobPage";
+// import MyJobsPage from "./pages/marketplace/MyJobsPage";
+// import MyApplicationsPage from "./pages/marketplace/MyApplicationsPage";
+// import ApplyJobPage from "./pages/marketplace/ApplyJobPage";
+// import JobApplicationsPage from "./pages/marketplace/JobApplicationsPage";
+// import ContractsPage from "./pages/marketplace/ContractsPage";
+// import ContractDetailsPage from "./pages/marketplace/ContractDetailsPage";
+// import FreelancerProfileViewPage from "./pages/marketplace/FreelancerProfileViewPage";
+// import FreelancerProfilePage from "./pages/marketplace/FreelancerProfilePage";
+// import DisputesPage from "./pages/marketplace/DisputesPage";
+// import BrowseTalentPage from "./pages/marketplace/BrowseTalentPage";
 
-// ⭐ FREELANCING HUB IMPORTS
-import FreelancingHub from "./pages/FreelancingHub";
-import AdminFreelancingHub from "./pages/admin/AdminFreelancingHub";
-import AdminWorkReviewPage from "./pages/admin/AdminWorkReviewPage";
-import AdminApplicantsPaymentDetails from "./pages/admin/AdminApplicantsPaymentDetails";
+// // ⭐ FREELANCING HUB IMPORTS
+// import FreelancingHub from "./pages/FreelancingHub";
+// import AdminFreelancingHub from "./pages/admin/AdminFreelancingHub";
+// import AdminWorkReviewPage from "./pages/admin/AdminWorkReviewPage";
+// import AdminApplicantsPaymentDetails from "./pages/admin/AdminApplicantsPaymentDetails";
 
 // Components
 import Navbar from './components/Navbar';
@@ -195,152 +196,7 @@ function App() {
               }
             />
 
-            {/* 💼 FREELANCING HUB - User Freelancing Dashboard */}
-            <Route
-              path="/freelancing-hub"
-              element={
-                <ProtectedRoute>
-                  <FreelancingHub />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* 💼 MARKETPLACE HUB - Main Freelancer Marketplace */}
-            <Route
-              path="/marketplace"
-              element={
-                <ProtectedRoute>
-                  <MarketplaceHub />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* 💼 MARKETPLACE DETAIL PAGES */}
-            <Route
-              path="/marketplace/browse"
-              element={
-                <ProtectedRoute>
-                  <BrowseJobsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/jobs/browse"
-              element={
-                <ProtectedRoute>
-                  <BrowseJobsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/post-job"
-              element={
-                <ProtectedRoute>
-                  <PostJobPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/my-jobs"
-              element={
-                <ProtectedRoute>
-                  <MyJobsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/apply/:jobId"
-              element={
-                <ProtectedRoute>
-                  <ApplyJobPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/jobs/:jobId"
-              element={
-                <ProtectedRoute>
-                  <JobDetailsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/jobs/:jobId/applications"
-              element={
-                <ProtectedRoute>
-                  <JobApplicationsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/my-applications"
-              element={
-                <ProtectedRoute>
-                  <MyApplicationsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/contracts"
-              element={
-                <ProtectedRoute>
-                  <ContractsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/contracts/:contractId"
-              element={
-                <ProtectedRoute>
-                  <ContractDetailsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/profile/:userId"
-              element={
-                <ProtectedRoute>
-                  <FreelancerProfileViewPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/profile"
-              element={
-                <ProtectedRoute>
-                  <FreelancerProfilePage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/disputes"
-              element={
-                <ProtectedRoute>
-                  <DisputesPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/marketplace/talent"
-              element={
-                <ProtectedRoute>
-                  <BrowseTalentPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Freelancing & marketplace routes removed */}
 
             {/* Admin Hub - Main Admin Control Center */}
             <Route
@@ -362,25 +218,7 @@ function App() {
               }
             />
 
-            {/* 💼 Admin Freelancing Hub - Admin Freelancing Dashboard */}
-            <Route
-              path="/admin/freelancing-hub"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminFreelancingHub />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* 💳 Admin Applicants Payment Details */}
-            <Route
-              path="/admin/applicants-payment"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminApplicantsPaymentDetails />
-                </ProtectedRoute>
-              }
-            />
+            {/* Admin freelancing hub & applicants payment routes removed */}
 
             {/* Admin Withdrawals */}
             <Route
@@ -398,6 +236,7 @@ function App() {
             {/* Extras */}
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            
             {/* Services (protected) */}
             <Route
               path="/services"
@@ -629,50 +468,7 @@ function App() {
               }
             />
 
-            <Route
-              path="/admin/contracts"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminContracts />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/jobs"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminJobs />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/disputes"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminDisputes />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/contract/:contractId"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminContractDetails />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/review-work/:contractId"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminWorkReviewPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Admin contracts/jobs/disputes routes removed (freelancing-specific) */}
 
             {/* ⭐ NEW ENGAGEMENT FEATURES ROUTES */}
             <Route
@@ -711,20 +507,23 @@ function App() {
               }
             />
 
-            {/* 💼 JOB ASSISTANT ROUTES */}
+            {/* 💼 JOB ASSISTANT ROUTES (kept, not part of freelancing marketplace) */}
             <Route
               path="/job-assistant-hub"
-              element={<JobAssistantHub />}
+              element={
+                <ProtectedRoute>
+                  <JobAssistantHub />
+                </ProtectedRoute>
+              }
             />
 
             <Route
               path="/job-assistant"
-              element={<JobAssistantPage />}
-            />
-
-            <Route
-              path="/job-application-status/:applicationId"
-              element={<JobApplicationStatusPage />}
+              element={
+                <ProtectedRoute>
+                  <JobAssistantPage />
+                </ProtectedRoute>
+              }
             />
 
             <Route
@@ -736,6 +535,13 @@ function App() {
               }
             />
 
+            {/* Application status page can be viewed from email link without login */}
+            <Route
+              path="/job-application-status/:id"
+              element={<JobApplicationStatusPage />}
+            />
+
+            {/* Admin Job Assistant Management */}
             <Route
               path="/admin/job-applications"
               element={

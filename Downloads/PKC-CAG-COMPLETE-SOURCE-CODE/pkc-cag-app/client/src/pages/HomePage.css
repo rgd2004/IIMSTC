@@ -51,7 +51,6 @@
   border-radius: 50%;
   filter: blur(100px);
   opacity: 0.3;
-  animation: float 20s infinite ease-in-out;
 }
 
 .orb-1 {
@@ -103,37 +102,8 @@
   height: 4px;
   background: rgba(102, 126, 234, 0.6);
   border-radius: 50%;
-  animation: particleFloat linear infinite;
 }
 
-@keyframes particleFloat {
-  0% {
-    transform: translateY(100vh) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) scale(1);
-    opacity: 0;
-  }
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-.hero-content {
-  text-align: center;
-  margin-bottom: 80px;
-}
 
 /* Logo Wrapper */
 .logo-wrapper {
@@ -797,7 +767,6 @@
   border-radius: 50%;
   filter: blur(100px);
   opacity: 0.2;
-  animation: float 15s infinite ease-in-out;
 }
 
 .cta-orb-1 {
@@ -833,13 +802,9 @@
   justify-content: center;
   font-size: 2.5rem;
   box-shadow: 0 20px 60px rgba(102, 126, 234, 0.5);
-  animation: bounce 2s infinite;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
+/* bounce animation removed for static mobile-friendly design */
 
 .cta-content h2 {
   font-size: 3.5rem;

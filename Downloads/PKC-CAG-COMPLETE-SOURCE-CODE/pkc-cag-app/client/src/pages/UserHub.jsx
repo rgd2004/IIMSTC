@@ -112,56 +112,7 @@ const UserHub = () => {
       gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
       iconBg: "#ff9a9e",
     },
-    {
-      id: 8,
-      title: "Freelancer Marketplace",
-      icon: "🏢",
-      description: "Find & hire freelancers or post jobs",
-      link: "/marketplace",
-      gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
-      iconBg: "#fcb69f",
-      isNew: true,
-    },
-    {
-      id: 9,
-      title: "My Jobs",
-      icon: "📝",
-      description: "Manage jobs you've posted",
-      link: "/marketplace/my-jobs",
-      gradient: "linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)",
-      iconBg: "#ff6e7f",
-      isNew: true,
-    },
-    {
-      id: 10,
-      title: "My Contracts",
-      icon: "📄",
-      description: "Track freelance contracts and payments",
-      link: "/marketplace/contracts",
-      gradient: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)",
-      iconBg: "#e0c3fc",
-      isNew: true,
-    },
-    {
-      id: 11,
-      title: "Freelancer Profile",
-      icon: "🎯",
-      description: "Build your freelancer portfolio",
-      link: "/marketplace/profile",
-      gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
-      iconBg: "#f6d365",
-      isNew: true,
-    },
-    {
-      id: 12,
-      title: "Disputes",
-      icon: "⚖️",
-      description: "Manage contract disputes",
-      link: "/marketplace/disputes",
-      gradient: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
-      iconBg: "#fbc2eb",
-      isNew: true,
-    },
+    // Freelancing / marketplace cards removed
   ];
 
   if (loading) {
@@ -201,13 +152,7 @@ const UserHub = () => {
           </p>
         </div>
         
-        <button 
-          className="hub-switch-btn"
-          onClick={() => navigate('/freelancing-hub')}
-        >
-          <span className="switch-icon">🔄</span>
-          <span>Freelancing Hub</span>
-        </button>
+        {/* Freelancing Hub switch removed */}
       </div>
 
       <div className="hub-content">
@@ -273,10 +218,6 @@ const UserHub = () => {
           <Link to="/profile" className="quick-action-btn">
             <span className="qa-icon">👤</span>
             <span>Profile</span>
-          </Link>
-          <Link to="/marketplace" className="quick-action-btn">
-            <span className="qa-icon">💼</span>
-            <span>Marketplace</span>
           </Link>
         </div>
 
