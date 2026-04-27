@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-export const sendEmailOTP = async (email, userType = 'user') => {
+export const sendOTPEmail = async (email, userType = 'user') => {
   try {
     // Request backend to generate and send OTP
     const response = await axios.post(`${API_BASE_URL}/send-otp`, {

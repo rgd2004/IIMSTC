@@ -8,6 +8,7 @@ import ArtisanUpload from './pages/ArtisanUpload';
 import SellerRegistration from './pages/SellerRegistration';
 import ProductDetails from './pages/ProductDetails';
 import Auth from './pages/Auth';
+import SellerLogin from './pages/SellerLogin';
 import Cart from './pages/Cart';
 import Payment from './pages/Payment';
 import AdminDashboard from './pages/AdminDashboard';
@@ -30,6 +31,7 @@ function App() {
               <Route path="/seller-dashboard" element={<SellerDashboard />} />
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/seller-login" element={<SellerLogin />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/payment" element={<Payment />} />
               <Route path="/admin" element={<AdminDashboard />} />

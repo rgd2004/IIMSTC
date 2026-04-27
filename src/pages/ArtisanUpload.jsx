@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload, Image as ImageIcon, Languages, Wand2 } from 'lucide-react';
 import AudioRecorder from '../components/AudioRecorder';
 
 export default function ArtisanUpload() {
+  const navigate = useNavigate();
   const [language, setLanguage] = useState('kannada'); // 'tamil' or 'kannada'
   const [photo, setPhoto] = useState(null);
   const [aiResult, setAiResult] = useState(null);
@@ -20,15 +22,42 @@ export default function ArtisanUpload() {
     }
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     setUploading(true);
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/seller/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: aiResult.title,
+          description: aiResult.description,
+          price: 0, // Default price, can be updated later
+          stock: 1, // Default stock
+          category: 'crafts',
+          images: photo ? [photo] : []
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Product successfully published to marketplace!');
+        setPhoto(null);
+        setAiResult(null);
+        setIsFlipped(false);
+        navigate('/seller-dashboard');
+      } else {
+        alert('Failed to publish product: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error publishing product:', error);
+      alert('Error publishing product. Please try again.');
+    } finally {
       setUploading(false);
-      alert('Product successfully published to marketplace!');
-      setPhoto(null);
-      setAiResult(null);
-      setIsFlipped(false);
-    }, 1500);
+    }
   };
 
   const handleRecordingComplete = (data) => {

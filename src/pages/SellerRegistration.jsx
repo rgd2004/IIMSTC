@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Lock, Mail, Phone, Store, MapPin } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import OTPVerification from '../components/OTPVerification';
 import { sendOTPEmail, completeSellerRegistration } from '../services/emailService';
 
 export default function SellerRegistration() {
   const [showOTP, setShowOTP] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   // Form State
   const [businessName, setBusinessName] = useState('');
@@ -65,12 +67,20 @@ export default function SellerRegistration() {
       });
 
       if (result.success) {
-        // Store seller info in localStorage
-        localStorage.setItem('sellerId', result.data?.sellerId || 'seller_' + Date.now());
+        const sellerUser = {
+          id: result.data?.id || 'seller_' + Date.now(),
+          name: businessName,
+          email: verifiedEmail,
+          role: 'seller'
+        };
+
+        setUser(sellerUser);
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('sellerId', result.data?.id || 'seller_' + Date.now());
         localStorage.setItem('sellerName', businessName);
         localStorage.setItem('sellerEmail', verifiedEmail);
-        
-        navigate('/artisan-upload');
+
+        navigate('/seller-dashboard');
       } else {
         setError(result.message || 'Failed to complete registration');
         setShowOTP(false);
@@ -233,7 +243,7 @@ export default function SellerRegistration() {
           Already have a seller account? 
           <button 
             type="button" 
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/seller-login')}
             style={{ 
               background: 'none', border: 'none', color: 'var(--color-primary)', 
               fontWeight: 600, cursor: 'pointer', outline: 'none', marginLeft: '0.5rem'

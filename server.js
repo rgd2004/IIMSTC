@@ -56,6 +56,31 @@ const writeDatabase = (data) => {
   }
 };
 
+const emailService = process.env.EMAIL_SERVICE || 'gmail';
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+
+if (!emailUser || !emailPass) {
+  console.warn('Warning: EMAIL_USER or EMAIL_PASS is not set. OTP emails will fail until these values are configured.');
+}
+
+const transporter = nodemailer.createTransport({
+  service: emailService,
+  auth: {
+    user: emailUser,
+    pass: emailPass
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+transporter.verify().then(() => {
+  console.log('✅ Email transporter verified successfully');
+}).catch((error) => {
+  console.warn('⚠️ Email transporter verification failed. OTP emails may not send.', error.message);
+});
+
 // Utility functions
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -108,14 +133,16 @@ const authenticateToken = (req, res, next) => {
 // Send OTP Email
 app.post('/api/send-otp', async (req, res) => {
   try {
-    const { email, otp, userType } = req.body;
+    const { email, userType } = req.body;
 
-    if (!email || !otp) {
+    if (!email) {
       return res.status(400).json({
         success: false,
-        message: 'Email and OTP are required'
+        message: 'Email is required'
       });
     }
+
+    const otp = generateOTP();
 
     // Prepare email content
     const subject = userType === 'seller'
@@ -303,7 +330,7 @@ app.post('/api/complete-seller-registration', async (req, res) => {
       phone,
       address,
       role: 'seller',
-      status: 'pending',
+      status: 'approved',
       products: [],
       createdAt: new Date().toISOString()
     };
@@ -320,6 +347,8 @@ app.post('/api/complete-seller-registration', async (req, res) => {
       html: confirmationEmail
     });
 
+    const token = generateToken(seller);
+
     res.status(200).json({
       success: true,
       message: 'Seller account created successfully. Please wait for admin approval.',
@@ -328,7 +357,8 @@ app.post('/api/complete-seller-registration', async (req, res) => {
         businessName: seller.businessName,
         email: seller.email,
         status: seller.status
-      }
+      },
+      token
     });
   } catch (error) {
     console.error('Error completing seller registration:', error);
@@ -712,7 +742,7 @@ app.post('/api/login', async (req, res) => {
     }
 
     const db = readDatabase();
-    const user = db.users.find(u => u.email === email) || db.sellers.find(s => s.email === email && s.status === 'approved');
+    const user = db.sellers.find(s => s.email === email) || db.users.find(u => u.email === email);
 
     if (!user) {
       return res.status(401).json({
@@ -1264,72 +1294,6 @@ app.post('/api/apply-coupon', (req, res) => {
   res.json({
     success: true,
     message: 'Coupon applied successfully'
-  });
-});
-
-// ============= SUPPORT CHAT APIS =============
-
-const supportChats = {};
-
-// Get or Create Support Chat
-app.get('/api/support/chat/:userId', (req, res) => {
-  const { userId } = req.params;
-
-  if (!supportChats[userId]) {
-    supportChats[userId] = {
-      userId,
-      messages: [
-        {
-          id: 1,
-          sender: 'admin',
-          text: 'Hello! How can we help you today?',
-          timestamp: new Date(),
-          status: 'read'
-        }
-      ],
-      createdAt: new Date()
-    };
-  }
-
-  res.json({
-    success: true,
-    chat: supportChats[userId]
-  });
-});
-
-// Send Support Message
-app.post('/api/support/message', (req, res) => {
-  const { userId, text, sender } = req.body;
-
-  if (!userId || !text) {
-    return res.status(400).json({
-      success: false,
-      message: 'UserId and message text are required'
-    });
-  }
-
-  if (!supportChats[userId]) {
-    supportChats[userId] = {
-      userId,
-      messages: [],
-      createdAt: new Date()
-    };
-  }
-
-  const newMessage = {
-    id: supportChats[userId].messages.length + 1,
-    sender: sender || 'user',
-    text,
-    timestamp: new Date(),
-    status: sender === 'admin' ? 'read' : 'sent'
-  };
-
-  supportChats[userId].messages.push(newMessage);
-
-  res.json({
-    success: true,
-    message: 'Message sent successfully',
-    data: newMessage
   });
 });
 
